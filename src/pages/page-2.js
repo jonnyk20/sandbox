@@ -1,16 +1,49 @@
-import React from "react"
+import React, { Component } from "react"
+import { Rnd } from "react-rnd"
 import { Link } from "gatsby"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-const SecondPage = () => (
-  <Layout>
-    <SEO title="Page two" />
-    <h1>Hi from the second page</h1>
-    <p>Welcome to page 2</p>
-    <Link to="/">Go back to the homepage</Link>
-  </Layout>
-)
+const style = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "solid 1px #ddd",
+  background: "#f0f0f0",
+}
+
+class SecondPage extends Component {
+  state = {
+    width: 100,
+    height: 100,
+    x: 10,
+    y: 10,
+  }
+  render() {
+    return (
+      <Layout>
+        <Rnd
+          style={style}
+          size={{ width: this.state.width, height: this.state.height }}
+          position={{ x: this.state.x, y: this.state.y }}
+          onDragStop={(e, d) => {
+            this.setState({ x: d.x, y: d.y })
+          }}
+          onResize={(e, direction, ref, delta, position) => {
+            this.setState({
+              width: ref.style.width,
+              height: ref.style.height,
+              ...position,
+            })
+          }}
+        >
+          Rnd
+        </Rnd>
+        <Link to="/">Go back to the homepage</Link>
+      </Layout>
+    )
+  }
+}
 
 export default SecondPage
