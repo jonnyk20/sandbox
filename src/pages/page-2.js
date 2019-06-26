@@ -1,50 +1,10 @@
 import React, { Component } from "react"
 import { Rnd } from "react-rnd"
 import { Link } from "gatsby"
-import "../custom.css"
-import "../ok.css"
+// import "../custom.css"
+// import "../ok.css"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
-// import preventScrollRefresh from "../utils/preventScrollRefresh"
-
-// function preventPullToRefresh(element) {
-//   var prevent = true // false
-//   document.body.style.overflow = "hidden"
-//   document.addEventListener(
-//     "touchmove",
-//     function(e) {
-//       e.s
-//       e.preventDefault()
-//     },
-//     { passive: false }
-//   )
-//   const target = document.querySelector(element)
-//   console.log("target", target)
-//   target.addEventListener("touchstart", function(e) {
-//     e.stopPropagation()
-//     // e.preventDefault()
-//     // e.stopImmediatePropagation()
-//     // if (e.touches.length !== 1) {
-//     //   return
-//     // }
-
-//     // var scrollY =
-//     //   window.pageYOffset ||
-//     //   document.body.scrollTop ||
-//     //   document.documentElement.scrollTop
-//     // prevent = scrollY === 0
-//   })
-
-//   target.addEventListener("touchmove", function(e) {
-//     e.stopPropagation()
-//     // e.preventDefault()
-//     // e.stopImmediatePropagation()
-//     // if (prevent) {
-//     //   prevent = false
-//     //   e.preventDefault()
-//     // }
-//   })
-// }
 
 function anotherOne() {
   document.body.style.overflow = "hidden"
@@ -76,37 +36,17 @@ class SecondPage extends Component {
     y: 10,
     isDragged: false,
   }
-  handleWheel = e => {
-    e.preventDefault()
-  }
+
   componentDidMount() {
-    console.log("Mounted")
-    // preventScrollRefresh()
-    // preventPullToRefresh(".wrapper") // pas
     anotherOne()
-    if (this.componentRef.current) {
-      this.componentRef.current.addEventListener("wheel", this.handleWheel)
-    }
   }
-  handleEvent = e => {
-    const { isDragged } = this.state
-    console.log("HAA")
-    e.preventDefault()
-    e.stopPropagation()
-    // e.stopImmediatePropagation()
-    if (!isDragged) {
-      this.setState({
-        isDragged: true,
-      })
-    }
-  }
+
   render() {
     return (
       <div
         className="wrapper"
         ref={this.componentRef}
         style={{ touchAction: "none" }}
-        onScroll={this.handleEvent}
       >
         <Rnd
           style={style}
