@@ -66,7 +66,7 @@ class SecondPage extends Component {
   componentDidMount() {
     console.log("Mounted")
     // preventScrollRefresh()
-    // preventPullToRefresh(".wrapper") // pas
+    preventPullToRefresh(".wrapper") // pas
     if (this.componentRef.current) {
       this.componentRef.current.addEventListener("wheel", this.handleWheel)
     }
