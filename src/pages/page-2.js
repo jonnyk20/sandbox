@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { Rnd } from "react-rnd"
 import { Link } from "gatsby"
 import "../custom.css"
+import "../ok.css"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 // import preventScrollRefresh from "../utils/preventScrollRefresh"
@@ -113,7 +114,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 13</div>
+        <div>version 14</div>
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
