@@ -18,8 +18,9 @@ function preventPullToRefresh(element) {
   const target = document.querySelector(element)
   console.log("target", target)
   target.addEventListener("touchstart", function(e) {
-    e.preventDefault()
-    e.stopImmediatePropagation()
+    e.stopPropagation()
+    // e.preventDefault()
+    // e.stopImmediatePropagation()
     // if (e.touches.length !== 1) {
     //   return
     // }
@@ -32,8 +33,9 @@ function preventPullToRefresh(element) {
   })
 
   target.addEventListener("touchmove", function(e) {
-    e.preventDefault()
-    e.stopImmediatePropagation()
+    e.stopPropagation()
+    // e.preventDefault()
+    // e.stopImmediatePropagation()
     // if (prevent) {
     //   prevent = false
     //   e.preventDefault()
@@ -92,13 +94,9 @@ class SecondPage extends Component {
           size={{ width: this.state.width, height: this.state.height }}
           position={{ x: this.state.x, y: this.state.y }}
           onDragStop={(e, d) => {
-            e.preventDefault()
-            e.stopImmediatePropagation()
             this.setState({ x: d.x, y: d.y })
           }}
           onResize={(e, direction, ref, delta, position) => {
-            e.preventDefault()
-            e.stopImmediatePropagation()
             this.setState({
               width: ref.style.width,
               height: ref.style.height,
@@ -109,7 +107,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 11</div>
+        <div>version 12</div>
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
