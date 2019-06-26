@@ -9,6 +9,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: contain;
   overscroll-behavior: none;
+  overflow-y: hidden;
 }
 article,
 aside,

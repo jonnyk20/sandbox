@@ -53,7 +53,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 3</div>
+        <div>version 4</div>
         <Link to="/">Go back to the homepage</Link>
       </Layout>
     )
