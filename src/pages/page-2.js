@@ -4,6 +4,7 @@ import { Link } from "gatsby"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import preventScrollRefresh from "../utils/preventScrollRefresh"
 
 function preventPullToRefresh(element) {
   var prevent = false
@@ -47,6 +48,7 @@ class SecondPage extends Component {
   }
   componentDidMount() {
     console.log("Mounted")
+    preventScrollRefresh()
     preventPullToRefresh(".wrapper") // pas
   }
   handleDrag = e => {
@@ -81,7 +83,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 6</div>
+        <div>version 7</div>
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
