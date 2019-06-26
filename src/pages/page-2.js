@@ -13,6 +13,7 @@ import SEO from "../components/seo"
 //   document.addEventListener(
 //     "touchmove",
 //     function(e) {
+//       e.s
 //       e.preventDefault()
 //     },
 //     { passive: false }
@@ -78,10 +79,12 @@ class SecondPage extends Component {
       this.componentRef.current.addEventListener("wheel", this.handleWheel)
     }
   }
-  handleDrag = e => {
+  handleEvent = e => {
     const { isDragged } = this.state
+    console.log("HAA")
     e.preventDefault()
-    e.stopImmediatePropagation()
+    e.stopPropagation()
+    // e.stopImmediatePropagation()
     if (!isDragged) {
       this.setState({
         isDragged: true,
@@ -94,9 +97,9 @@ class SecondPage extends Component {
         className="wrapper"
         ref={this.componentRef}
         style={{ touchAction: "none" }}
+        onTouchMove={this.handleEvent}
       >
         <Rnd
-          onDrag={this.handleDrag}
           style={style}
           size={{ width: this.state.width, height: this.state.height }}
           position={{ x: this.state.x, y: this.state.y }}
@@ -111,10 +114,10 @@ class SecondPage extends Component {
             })
           }}
         >
-          Rnd
+          <div>version 15</div>
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 14</div>
+
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
