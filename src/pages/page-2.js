@@ -19,11 +19,22 @@ class SecondPage extends Component {
     height: 100,
     x: 10,
     y: 10,
+    isDragged: false,
+  }
+  handleDrag = e => {
+    const { isDragged } = this.state
+    e.preventDefault()
+    if (!isDragged) {
+      this.setState({
+        isDragged: true,
+      })
+    }
   }
   render() {
     return (
       <Layout>
         <Rnd
+          onDrag={this.handleDrag}
           style={style}
           size={{ width: this.state.width, height: this.state.height }}
           position={{ x: this.state.x, y: this.state.y }}
@@ -40,6 +51,7 @@ class SecondPage extends Component {
         >
           Rnd
         </Rnd>
+        <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
         <Link to="/">Go back to the homepage</Link>
       </Layout>
     )
