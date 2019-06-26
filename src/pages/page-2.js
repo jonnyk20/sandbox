@@ -48,6 +48,15 @@ import SEO from "../components/seo"
 
 function anotherOne() {
   document.body.style.overflow = "hidden"
+  console.log("Another one")
+  document.addEventListener(
+    "touchmove",
+    function(e) {
+      console.log("HAAAA")
+      e.preventDefault()
+    },
+    { passive: false }
+  )
 }
 
 const style = {
@@ -97,7 +106,7 @@ class SecondPage extends Component {
         className="wrapper"
         ref={this.componentRef}
         style={{ touchAction: "none" }}
-        onTouchMove={this.handleEvent}
+        onScroll={this.handleEvent}
       >
         <Rnd
           style={style}
@@ -114,7 +123,7 @@ class SecondPage extends Component {
             })
           }}
         >
-          <div>version 15</div>
+          <div>version 16</div>
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
 
