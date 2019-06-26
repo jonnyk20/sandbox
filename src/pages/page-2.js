@@ -7,26 +7,30 @@ import SEO from "../components/seo"
 import preventScrollRefresh from "../utils/preventScrollRefresh"
 
 function preventPullToRefresh(element) {
-  var prevent = false
+  var prevent = true // false
   const target = document.querySelector(element)
   console.log("target", target)
   target.addEventListener("touchstart", function(e) {
-    if (e.touches.length !== 1) {
-      return
-    }
+    e.preventDefault()
+    e.stopImmediatePropagation()
+    // if (e.touches.length !== 1) {
+    //   return
+    // }
 
-    var scrollY =
-      window.pageYOffset ||
-      document.body.scrollTop ||
-      document.documentElement.scrollTop
-    prevent = scrollY === 0
+    // var scrollY =
+    //   window.pageYOffset ||
+    //   document.body.scrollTop ||
+    //   document.documentElement.scrollTop
+    // prevent = scrollY === 0
   })
 
   target.addEventListener("touchmove", function(e) {
-    if (prevent) {
-      prevent = false
-      e.preventDefault()
-    }
+    e.preventDefault()
+    e.stopImmediatePropagation()
+    // if (prevent) {
+    //   prevent = false
+    //   e.preventDefault()
+    // }
   })
 }
 
@@ -53,7 +57,7 @@ class SecondPage extends Component {
   componentDidMount() {
     console.log("Mounted")
     preventScrollRefresh()
-    preventPullToRefresh(".wrapper") // pas
+    // preventPullToRefresh(".wrapper") // pas
     if (this.componentRef.current) {
       this.componentRef.current.addEventListener("wheel", this.handleWheel)
     }
@@ -81,9 +85,13 @@ class SecondPage extends Component {
           size={{ width: this.state.width, height: this.state.height }}
           position={{ x: this.state.x, y: this.state.y }}
           onDragStop={(e, d) => {
+            e.preventDefault()
+            e.stopImmediatePropagation()
             this.setState({ x: d.x, y: d.y })
           }}
           onResize={(e, direction, ref, delta, position) => {
+            e.preventDefault()
+            e.stopImmediatePropagation()
             this.setState({
               width: ref.style.width,
               height: ref.style.height,
@@ -94,7 +102,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 9</div>
+        <div>version 10</div>
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
