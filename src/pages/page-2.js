@@ -4,10 +4,17 @@ import { Link } from "gatsby"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
-import preventScrollRefresh from "../utils/preventScrollRefresh"
+// import preventScrollRefresh from "../utils/preventScrollRefresh"
 
 function preventPullToRefresh(element) {
   var prevent = true // false
+  document.addEventListener(
+    "touchmove",
+    function(e) {
+      e.preventDefault()
+    },
+    { passive: false }
+  )
   const target = document.querySelector(element)
   console.log("target", target)
   target.addEventListener("touchstart", function(e) {
@@ -56,8 +63,8 @@ class SecondPage extends Component {
   }
   componentDidMount() {
     console.log("Mounted")
-    preventScrollRefresh()
-    // preventPullToRefresh(".wrapper") // pas
+    // preventScrollRefresh()
+    preventPullToRefresh(".wrapper") // pas
     if (this.componentRef.current) {
       this.componentRef.current.addEventListener("wheel", this.handleWheel)
     }
@@ -102,7 +109,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 10</div>
+        <div>version 11</div>
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
