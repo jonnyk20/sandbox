@@ -24,6 +24,7 @@ class SecondPage extends Component {
   handleDrag = e => {
     const { isDragged } = this.state
     e.preventDefault()
+    e.stopImmediatePropagation()
     if (!isDragged) {
       this.setState({
         isDragged: true,
@@ -52,6 +53,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
+        <div>version 3</div>
         <Link to="/">Go back to the homepage</Link>
       </Layout>
     )
