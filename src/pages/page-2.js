@@ -8,27 +8,29 @@ import SEO from "../components/seo"
 function preventPullToRefresh(element) {
   var prevent = false
 
-  document.querySelector(element).addEventListener("touchstart", function(e) {
-    if (e.touches.length !== 1) {
-      return
-    }
+  window.document
+    .querySelector(element)
+    .addEventListener("touchstart", function(e) {
+      if (e.touches.length !== 1) {
+        return
+      }
 
-    var scrollY =
-      window.pageYOffset ||
-      document.body.scrollTop ||
-      document.documentElement.scrollTop
-    prevent = scrollY === 0
-  })
+      var scrollY =
+        window.pageYOffset ||
+        window.document.body.scrollTop ||
+        window.document.documentElement.scrollTop
+      prevent = scrollY === 0
+    })
 
-  document.querySelector(element).addEventListener("touchmove", function(e) {
-    if (prevent) {
-      prevent = false
-      e.preventDefault()
-    }
-  })
+  window.document
+    .querySelector(element)
+    .addEventListener("touchmove", function(e) {
+      if (prevent) {
+        prevent = false
+        e.preventDefault()
+      }
+    })
 }
-
-preventPullToRefresh("html") // pas
 
 const style = {
   display: "flex",
@@ -45,6 +47,9 @@ class SecondPage extends Component {
     x: 10,
     y: 10,
     isDragged: false,
+  }
+  componentDidMount() {
+    preventPullToRefresh("html") // pas
   }
   handleDrag = e => {
     const { isDragged } = this.state
@@ -78,7 +83,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 4</div>
+        <div>version 5</div>
         <Link to="/">Go back to the homepage</Link>
       </Layout>
     )
