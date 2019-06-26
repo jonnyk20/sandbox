@@ -1,46 +1,51 @@
 import React, { Component } from "react"
 import { Rnd } from "react-rnd"
 import { Link } from "gatsby"
-
+import "../custom.css"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 // import preventScrollRefresh from "../utils/preventScrollRefresh"
 
-function preventPullToRefresh(element) {
-  var prevent = true // false
-  document.addEventListener(
-    "touchmove",
-    function(e) {
-      e.preventDefault()
-    },
-    { passive: false }
-  )
-  const target = document.querySelector(element)
-  console.log("target", target)
-  target.addEventListener("touchstart", function(e) {
-    e.stopPropagation()
-    // e.preventDefault()
-    // e.stopImmediatePropagation()
-    // if (e.touches.length !== 1) {
-    //   return
-    // }
+// function preventPullToRefresh(element) {
+//   var prevent = true // false
+//   document.body.style.overflow = "hidden"
+//   document.addEventListener(
+//     "touchmove",
+//     function(e) {
+//       e.preventDefault()
+//     },
+//     { passive: false }
+//   )
+//   const target = document.querySelector(element)
+//   console.log("target", target)
+//   target.addEventListener("touchstart", function(e) {
+//     e.stopPropagation()
+//     // e.preventDefault()
+//     // e.stopImmediatePropagation()
+//     // if (e.touches.length !== 1) {
+//     //   return
+//     // }
 
-    // var scrollY =
-    //   window.pageYOffset ||
-    //   document.body.scrollTop ||
-    //   document.documentElement.scrollTop
-    // prevent = scrollY === 0
-  })
+//     // var scrollY =
+//     //   window.pageYOffset ||
+//     //   document.body.scrollTop ||
+//     //   document.documentElement.scrollTop
+//     // prevent = scrollY === 0
+//   })
 
-  target.addEventListener("touchmove", function(e) {
-    e.stopPropagation()
-    // e.preventDefault()
-    // e.stopImmediatePropagation()
-    // if (prevent) {
-    //   prevent = false
-    //   e.preventDefault()
-    // }
-  })
+//   target.addEventListener("touchmove", function(e) {
+//     e.stopPropagation()
+//     // e.preventDefault()
+//     // e.stopImmediatePropagation()
+//     // if (prevent) {
+//     //   prevent = false
+//     //   e.preventDefault()
+//     // }
+//   })
+// }
+
+function anotherOne() {
+  document.body.style.overflow = "hidden"
 }
 
 const style = {
@@ -66,7 +71,8 @@ class SecondPage extends Component {
   componentDidMount() {
     console.log("Mounted")
     // preventScrollRefresh()
-    preventPullToRefresh(".wrapper") // pas
+    // preventPullToRefresh(".wrapper") // pas
+    anotherOne()
     if (this.componentRef.current) {
       this.componentRef.current.addEventListener("wheel", this.handleWheel)
     }
@@ -107,7 +113,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 12</div>
+        <div>version 13</div>
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
