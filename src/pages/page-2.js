@@ -39,6 +39,7 @@ const style = {
 }
 
 class SecondPage extends Component {
+  componentRef = React.createRef()
   state = {
     width: 100,
     height: 100,
@@ -46,10 +47,16 @@ class SecondPage extends Component {
     y: 10,
     isDragged: false,
   }
+  handleWheel = e => {
+    e.preventDefault()
+  }
   componentDidMount() {
     console.log("Mounted")
     preventScrollRefresh()
     preventPullToRefresh(".wrapper") // pas
+    if (this.componentRef.current) {
+      this.componentRef.current.addEventListener("wheel", this.handleWheel)
+    }
   }
   handleDrag = e => {
     const { isDragged } = this.state
@@ -63,7 +70,7 @@ class SecondPage extends Component {
   }
   render() {
     return (
-      <div className="wrapper">
+      <div className="wrapper" ref={this.componentRef}>
         <Rnd
           onDrag={this.handleDrag}
           style={style}
@@ -83,7 +90,7 @@ class SecondPage extends Component {
           Rnd
         </Rnd>
         <div>{this.state.isDragged ? "dragged" : "not yet"}</div>
-        <div>version 7</div>
+        <div>version 8</div>
         <Link to="/">Go back to the homepage</Link>
       </div>
     )
