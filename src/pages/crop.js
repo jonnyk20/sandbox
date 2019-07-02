@@ -9,6 +9,13 @@ const cStyle = {
   position: "absolute",
   right: "100px",
 }
+
+const handleClick = () => {
+  const canvas = document.getElementById("canvas")
+  const button = document.getElementById("button")
+  const dataURL = canvas.toDataURL("image/png")
+  button.href = dataURL
+}
 const Crop = () => {
   const [isLoaded, setLoaded] = useState(false)
   const [A, setA] = useState(0)
@@ -19,6 +26,7 @@ const Crop = () => {
   const [F, setF] = useState(0)
   const [G, setG] = useState(500)
   const [H, setH] = useState(500)
+  const [src, setSrc] = useState(null)
   const img = document.getElementById("img")
   console.log("IMG", img)
   if (isLoaded) {
@@ -38,6 +46,17 @@ const Crop = () => {
         <canvas id="canvas"></canvas>
       </div>
       <img src={dog} id="img" onLoad={() => setLoaded(true)} />
+      <div>
+        <a
+          href="#"
+          download="myImage.jpg"
+          class="button"
+          id="button"
+          onClick={handleClick}
+        >
+          Download
+        </a>
+      </div>
       <div>
         <span>
           A
