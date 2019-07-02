@@ -10,6 +10,9 @@ const IndexPage = () => (
     <SEO title="Home" />
     <h1>Home</h1>
     <div>
+      <Link to="/ml-flow/">ML Flow</Link>
+    </div>
+    <div>
       <Link to="/drag/">Drag</Link>
     </div>
     <div>
