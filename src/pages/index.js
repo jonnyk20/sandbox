@@ -21,6 +21,9 @@ const IndexPage = () => (
     <div>
       <Link to="/classification/">Classification</Link>
     </div>
+    <div>
+      <Link to="/crop/">Crop</Link>
+    </div>
   </Layout>
 )
 
