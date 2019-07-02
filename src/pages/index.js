@@ -18,6 +18,9 @@ const IndexPage = () => (
     <div>
       <Link to="/detection/">Detection</Link>
     </div>
+    <div>
+      <Link to="/classification/">Classification</Link>
+    </div>
   </Layout>
 )
 
