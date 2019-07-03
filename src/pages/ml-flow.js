@@ -6,12 +6,15 @@ let canvas
 let ctx
 let myYolo
 
+const getPx = str =>
+  typeof str === "string" ? Number(str.replace("px", "")) : str
+
 const style = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   border: "solid 3px #ddd",
-  background: "transparent",
+  background: "rgba(75, 62, 217, 0.27058823529411763)",
 }
 
 function disablePageDrag() {
@@ -34,9 +37,15 @@ class MLFlow extends Component {
     height: 100,
     x: 10,
     y: 10,
+    img: null,
+    cropped: false,
   }
   componentDidMount() {
     disablePageDrag()
+  }
+  onLoad = () => {
+    console.log("IMG W", this.state.img.width)
+    console.log("IMG H", this.state.img.height)
   }
   runDetection = async () => {
     console.log("RUN")
@@ -53,6 +62,7 @@ class MLFlow extends Component {
       ctx.fillText(label, left + 5, top + 10)
       ctx.stroke()
     })
+
     if (boxes.length > 0) {
       const { left: x, top: y, width, height } = boxes[0]
       this.setState({
@@ -77,7 +87,7 @@ class MLFlow extends Component {
         ctx.drawImage(img, 0, 0, img.width, img.height)
         await this.runDetection()
       }
-      img.src = this.state.file // dog
+      img.src = this.state.file
     } catch (e) {
       console.error(e)
     }
@@ -91,10 +101,14 @@ class MLFlow extends Component {
       maxHeight,
     }
     const file = URL.createObjectURL(event.target.files[0])
+    const img = new Image()
+    img.onload = this.onLoad
+    img.src = file
     this.setState(
       {
         file,
         style,
+        img,
       },
       () => {
         canvas = document.getElementById("canvas")
@@ -103,11 +117,36 @@ class MLFlow extends Component {
       }
     )
   }
+
+  crop = () => {
+    this.setState({
+      cropped: true,
+    })
+  }
+
   render() {
+    const canvas = document.getElementById("cropped")
+    const { img } = this.state
+    const {
+      x: boxLeft,
+      y: boxTop,
+      height: boxHeight,
+      width: boxWidth,
+    } = this.state
+    console.log("IMG", img)
+    if (img && this.state.cropped) {
+      const { height, width } = img
+      const ctx = canvas.getContext("2d")
+      canvas.height = getPx(boxHeight)
+      canvas.width = getPx(boxWidth)
+      ctx.drawImage(img, boxLeft, boxTop, width, height, 0, 0, width, height)
+    }
+    console.log("STATE", this.state)
     return (
       <div>
         <canvas id="canvas"></canvas>
         <div>Upload here</div>
+        <button onClick={this.crop}>Crop</button>
         <input
           type="file"
           accept="image/*"
@@ -115,6 +154,7 @@ class MLFlow extends Component {
           onChange={this.handleChange}
         ></input>
         <Rnd
+          // onMouseDown={this.crop}
           style={style}
           size={{ width: this.state.width, height: this.state.height }}
           position={{ x: this.state.x, y: this.state.y }}
@@ -129,8 +169,9 @@ class MLFlow extends Component {
             })
           }}
         >
-          <div>version 16</div>
+          <div onDoubleClick={this.crop}>version 16</div>
         </Rnd>
+        <canvas id="cropped"></canvas>
       </div>
     )
   }
