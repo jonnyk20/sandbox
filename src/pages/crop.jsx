@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import dog from "../images/dog.jpg"
 
 const style = {
@@ -10,13 +10,16 @@ const cStyle = {
   right: "100px",
 }
 
-const handleClick = () => {
-  const canvas = document.getElementById("canvas")
-  const button = document.getElementById("button")
-  const dataURL = canvas.toDataURL("image/png")
-  button.href = dataURL
-}
 const Crop = () => {
+  const canvasRef = useRef(null)
+  const buttonRef = useRef(null)
+  const imgRef = useRef(null)
+  const handleClick = () => {
+    const { current: canvas } = canvasRef
+    const { current: button } = buttonRef
+    const dataURL = canvas.toDataURL("image/png")
+    button.href = dataURL
+  }
   const [isLoaded, setLoaded] = useState(false)
   const [A, setA] = useState(0)
   const [B, setB] = useState(0)
@@ -27,7 +30,7 @@ const Crop = () => {
   const [G, setG] = useState(500)
   const [H, setH] = useState(500)
   const [src, setSrc] = useState(null)
-  const img = document.getElementById("img")
+  const { current: img } = imgRef
   console.log("IMG", img)
   if (isLoaded) {
     const x = 500
@@ -42,17 +45,17 @@ const Crop = () => {
   }
   return (
     <div>
-      <div class="can" style={cStyle}>
-        <canvas id="canvas"></canvas>
+      <div style={cStyle}>
+        <canvas id="canvas" ref={canvasRef}></canvas>
       </div>
-      <img src={dog} id="img" onLoad={() => setLoaded(true)} />
+      <img src={dog} id="img" onLoad={() => setLoaded(true)} ref={imgRef} />
       <div>
         <a
           href="#"
           download="myImage.jpg"
-          class="button"
           id="button"
           onClick={handleClick}
+          ref={buttonRef}
         >
           Download
         </a>

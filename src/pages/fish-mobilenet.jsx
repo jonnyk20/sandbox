@@ -1,20 +1,22 @@
-import React, { Component } from "react"
+import React, { Component, createRef } from "react"
 import * as tf from "@tensorflow/tfjs"
 import fish from "../images/fish3.jpg"
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
 
-let model
-
 class CustomDetection extends Component {
   state = {
     detected: false,
+    model: null,
   }
+  canvasRef = createRef()
+  imgRef = createRef()
+
   drawBoxes = boxes => {
-    const img = document.getElementById("img")
+    const { current: img } = this.imgRef
     const { width: imgW, height: imgH } = img
-    const canvas = document.getElementById("canvas")
+    const { current: canvas } = this.canvasRef
     const ctx = canvas.getContext("2d")
     canvas.width = imgW
     canvas.height = imgH
@@ -95,19 +97,20 @@ class CustomDetection extends Component {
       "detection_classes",
     ]
     try {
-      model = await tf.loadGraphModel(url)
+      const model = await tf.loadGraphModel(url)
+      this.setState({ model })
       console.log("model", model)
     } catch (err) {
       console.log("ERR", err)
     }
   }
   makePrediction = async () => {
-    const img = document.getElementById("img")
+    const { current: img } = this.imgRef
 
     const tfImg = tf.browser.fromPixels(img).toFloat()
     const expanded = tfImg.expandDims(0)
 
-    const res = await model.executeAsync(expanded)
+    const res = await this.state.model.executeAsync(expanded)
     console.log("RES", res)
     const detection_boxes = res[2]
     const arr = await detection_boxes.array()
@@ -125,8 +128,8 @@ class CustomDetection extends Component {
     console.log("RENDER")
     return (
       <div>
-        <canvas id="canvas"></canvas>
-        <img src={fish} onLoad={this.onLoad} id="img" />
+        <canvas id="canvas" ref={this.canvasRef}></canvas>
+        <img src={fish} onLoad={this.onLoad} id="img" ref={this.imgRef} />
         <div>RCNN</div>
         <button onClick={this.loadModel}>Load Model</button>
         <button onClick={this.makePrediction}>Make Predition</button>
@@ -136,3 +139,5 @@ class CustomDetection extends Component {
 }
 
 export default CustomDetection
+
+// export default () => <div>hi</div>
