@@ -3,7 +3,7 @@ import * as tf from "@tensorflow/tfjs"
 import fish from "../images/fish3.jpg"
 
 const url =
-  "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_rcnn_2/model.json"
+  "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
 
 let model
 
@@ -44,6 +44,26 @@ class CustomDetection extends Component {
     ctx.stroke()
   }
 
+  formatData2 = tensors => {
+    const [
+      raw_detection_scores,
+      raw_detection_boxes,
+      detection_scores,
+      detection_boxes,
+      num_detections,
+      detection_classes,
+    ] = tensors
+
+    const boxes = []
+    for (let i = 0; i < 1; i++) {
+      const n = i * 4
+      const box = detection_boxes.values.slice(n, n + 4)
+      console.log("BOX", box)
+      boxes.push(box)
+    }
+    this.drawBoxes(boxes)
+  }
+
   formatData = tensors => {
     const [
       raw_detection_scores,
@@ -53,8 +73,9 @@ class CustomDetection extends Component {
       num_detections,
       detection_classes,
     ] = tensors
+    console.log("TENSORS", tensors)
     const boxes = []
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 1; i++) {
       const n = i * 4
       const box = detection_boxes.values.slice(n, n + 4)
       console.log("BOX", box)
@@ -87,13 +108,17 @@ class CustomDetection extends Component {
     const expanded = tfImg.expandDims(0)
 
     const res = await model.executeAsync(expanded)
+    console.log("RES", res)
+    const detection_boxes = res[2]
+    const arr = await detection_boxes.array()
+    console.log("ARRAY", arr)
     const tensors = await Promise.all(
       res.map(async (ts, i) => {
         return await ts.buffer()
       })
     )
     console.log("CALLING")
-    this.formatData(tensors)
+    this.formatData2(tensors)
     console.log("TENSORS", tensors)
   }
   render() {

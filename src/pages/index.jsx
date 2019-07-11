@@ -10,6 +10,9 @@ const IndexPage = () => (
     <SEO title="Home" />
     <h1>Home</h1>
     <div>
+      <Link to="/fish-mobilenet/">Fish Mobilenet</Link>
+    </div>
+    <div>
       <Link to="/custom-detection/">Custom Detection</Link>
     </div>
     <div>
