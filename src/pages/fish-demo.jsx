@@ -5,12 +5,13 @@ import fish from "../images/fish3.jpg"
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
 
-class CustomDetection extends Component {
+class FishMobilenet extends Component {
   state = {
+    modelLoaded: false,
     detected: false,
     model: null,
     downloadProgress: 0,
-    file: null,
+    predicted: false,
   }
   canvasRef = createRef()
   imgRef = createRef()
@@ -40,12 +41,15 @@ class CustomDetection extends Component {
       const boxY = topLeft[1]
 
       ctx.lineWidth = 2
-      ctx.fillStyle = "red"
-      ctx.strokeStyle = "red"
+      ctx.fillStyle = "green"
+      ctx.strokeStyle = "green"
       ctx.rect(boxX, boxY, boxW, boxH)
       console.log({ boxX, boxY, boxW, boxH })
     })
     ctx.stroke()
+    this.setState({
+      predicted: true,
+    })
   }
 
   formatData2 = tensors => {
@@ -106,7 +110,7 @@ class CustomDetection extends Component {
           console.log("c", c)
         },
       })
-      this.setState({ model })
+      this.setState({ model, modelLoaded: true })
       console.log("model", model)
     } catch (err) {
       console.log("ERR", err)
@@ -132,20 +136,65 @@ class CustomDetection extends Component {
     this.formatData2(tensors)
     console.log("TENSORS", tensors)
   }
+  handleChange = event => {
+    console.log("EVENT", event.target.files)
+    const { innerWidth: maxWidth, innerHeight: maxHeight } = window
+    const style = {
+      maxWidth,
+      maxHeight,
+    }
+    this.setState({
+      file: URL.createObjectURL(event.target.files[0]),
+      style,
+    })
+  }
+
+  reset = () => {
+    this.setState({
+      predicted: false,
+    })
+  }
   render() {
     console.log("RENDER")
+    const { modelLoaded, file, predicted } = this.state
+    const imgStyle = predicted
+      ? {
+          visibility: "hidden",
+        }
+      : {}
+    const canvasStyle = predicted
+      ? {}
+      : {
+          visibility: "hidden",
+        }
     return (
       <div>
-        <canvas id="canvas" ref={this.canvasRef}></canvas>
-        <img src={fish} onLoad={this.onLoad} id="img" ref={this.imgRef} />
+        <canvas id="canvas" ref={this.canvasRef} style={canvasStyle}></canvas>
+        <img
+          src={file}
+          onLoad={this.onLoad}
+          id="img"
+          ref={this.imgRef}
+          style={imgStyle}
+        />
         <div>RCNN</div>
-        <button onClick={this.loadModel}>Load Model</button>
-        <button onClick={this.makePrediction}>Make Predition</button>
+        {modelLoaded ? (
+          <button onClick={this.makePrediction}>Make Predition</button>
+        ) : (
+          <button onClick={this.loadModel}>Load Model</button>
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          capture="camera"
+          onChange={this.handleChange}
+        />
+        {!predicted && <button onClick={this.reset}>Reset</button>}
       </div>
     )
   }
 }
 
-export default CustomDetection
+export default FishMobilenet
 
 // export default () => <div>hi</div>
