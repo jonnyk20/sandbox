@@ -12,12 +12,17 @@ class FishMobilenet extends Component {
     model: null,
     downloadProgress: 0,
     predicted: false,
+    resizedSrc: null,
+    hiddenRef: null,
   }
   canvasRef = createRef()
+  resizedsRef = createRef()
+  hiddenRef = createRef()
   imgRef = createRef()
+  testCanvasRef = createRef()
 
   drawBoxes = boxes => {
-    const { current: img } = this.imgRef
+    const { current: img } = this.testCanvasRef
     const { width: imgW, height: imgH } = img
     const { current: canvas } = this.canvasRef
     const ctx = canvas.getContext("2d")
@@ -47,9 +52,6 @@ class FishMobilenet extends Component {
       console.log({ boxX, boxY, boxW, boxH })
     })
     ctx.stroke()
-    this.setState({
-      predicted: true,
-    })
   }
 
   formatData2 = tensors => {
@@ -63,11 +65,13 @@ class FishMobilenet extends Component {
     ] = tensors
 
     const boxes = []
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < num_detections.values[0]; i++) {
       const n = i * 4
       const box = detection_boxes.values.slice(n, n + 4)
       console.log("BOX", box)
-      boxes.push(box)
+      if (detection_scores.values[i] > 0.1) {
+        boxes.push(box)
+      }
     }
     this.drawBoxes(boxes)
   }
@@ -117,7 +121,8 @@ class FishMobilenet extends Component {
     }
   }
   makePrediction = async () => {
-    const { current: img } = this.imgRef
+    const { current: img } = this.testCanvasRef
+    const { resizedSrc } = this.state
 
     const tfImg = tf.browser.fromPixels(img).toFloat()
     const expanded = tfImg.expandDims(0)
@@ -135,6 +140,9 @@ class FishMobilenet extends Component {
     console.log("CALLING")
     this.formatData2(tensors)
     console.log("TENSORS", tensors)
+    this.setState({
+      predicted: true,
+    })
   }
   handleChange = event => {
     console.log("EVENT", event.target.files)
@@ -152,6 +160,36 @@ class FishMobilenet extends Component {
     })
   }
 
+  resize = () => {
+    const { current: canvas } = this.testCanvasRef
+    const { current: img } = this.hiddenRef
+    const { innerWidth: maxWidth } = window
+    let { height, width } = img
+    console.log("ORIGINAN", width, height, width / height)
+    if (width > maxWidth) {
+      const ratio = width / height
+      width = maxWidth
+      height = maxWidth / ratio
+    }
+    console.log("SIZE", width, height, width / height)
+    const ctx = canvas.getContext("2d")
+    canvas.width = width
+    canvas.height = height
+    ctx.drawImage(img, 0, 0, width, height)
+    // const resizedSrc = canvas.toDataUrl("image/png")
+    // this.setState({
+    //   resizedW,
+    //   resizedH,
+    // })
+  }
+
+  onUpload = event => {
+    console.log("ON UPLOAD")
+    const image = URL.createObjectURL(event.target.files[0])
+    const { current: img } = this.hiddenRef
+    img.src = image
+  }
+
   reset = () => {
     this.setState({
       predicted: false,
@@ -160,28 +198,43 @@ class FishMobilenet extends Component {
   render() {
     console.log("RENDER")
     const { modelLoaded, file, predicted, maxWidth } = this.state
+    const hidden = {
+      display: "none",
+    }
     const imgStyle = predicted
       ? {
-          visibility: "hidden",
+          display: "none",
         }
       : {}
     const canvasStyle = predicted
       ? {}
       : {
-          visibility: "hidden",
+          display: "none",
         }
     return (
       <div>
-        <canvas id="canvas" ref={this.canvasRef} style={canvasStyle}></canvas>
+        <img
+          id="resized"
+          ref={this.resizedsRef}
+          src={this.resized}
+          src={this.resizeSrc}
+        />
+        <img
+          src={this.hiddemSrc}
+          ref={this.hiddenRef}
+          style={hidden}
+          onLoad={this.resize}
+        />
+        <canvas ref={this.canvasRef} style={canvasStyle}></canvas>
         <img
           src={file}
           onLoad={this.onLoad}
           id="img"
           ref={this.imgRef}
-          style={imgStyle}
-          width={maxWidth}
+          style={hidden}
         />
-        <div>RCNN</div>
+        {!predicted && <canvas ref={this.testCanvasRef} id="resized" />}
+        <div>SSD</div>
         {modelLoaded ? (
           <button onClick={this.makePrediction}>Make Predition</button>
         ) : (
@@ -191,9 +244,9 @@ class FishMobilenet extends Component {
           type="file"
           accept="image/*"
           capture="camera"
-          onChange={this.handleChange}
+          onChange={this.onUpload}
         />
-        {!predicted && <button onClick={this.reset}>Reset</button>}
+        {predicted && <button onClick={this.reset}>Reset</button>}
       </div>
     )
   }
