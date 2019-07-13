@@ -138,6 +138,7 @@ class FishMobilenet extends Component {
   }
   handleChange = event => {
     console.log("EVENT", event.target.files)
+
     const { innerWidth: maxWidth, innerHeight: maxHeight } = window
     const style = {
       maxWidth,
@@ -146,6 +147,8 @@ class FishMobilenet extends Component {
     this.setState({
       file: URL.createObjectURL(event.target.files[0]),
       style,
+      maxHeight,
+      maxWidth,
     })
   }
 
@@ -156,7 +159,7 @@ class FishMobilenet extends Component {
   }
   render() {
     console.log("RENDER")
-    const { modelLoaded, file, predicted } = this.state
+    const { modelLoaded, file, predicted, maxWidth } = this.state
     const imgStyle = predicted
       ? {
           visibility: "hidden",
@@ -176,6 +179,7 @@ class FishMobilenet extends Component {
           id="img"
           ref={this.imgRef}
           style={imgStyle}
+          width={maxWidth}
         />
         <div>RCNN</div>
         {modelLoaded ? (
