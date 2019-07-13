@@ -165,25 +165,31 @@ class FishMobilenet extends Component {
   makePrediction = async () => {
     const { current: img } = this.testCanvasRef
     const { resizedSrc } = this.state
-
-    const tfImg = tf.browser.fromPixels(img).toFloat()
-    const expanded = tfImg.expandDims(0)
-
-    const res = await this.state.model.executeAsync(expanded)
-    console.log("RES", res)
-    const detection_boxes = res[2]
-    const arr = await detection_boxes.array()
-    console.log("ARRAY", arr)
-    const tensors = await Promise.all(
-      res.map(async (ts, i) => {
-        return await ts.buffer()
-      })
-    )
-    console.log("CALLING")
-    this.formatData2(tensors)
-    console.log("TENSORS", tensors)
+    let fail = false
+    try {
+      const tfImg = tf.browser.fromPixels(img).toFloat()
+      const expanded = tfImg.expandDims(0)
+      console.log("EXPANNDED")
+      const res = await this.state.model.executeAsync(expanded)
+      console.log("RES", res)
+      const detection_boxes = res[2]
+      const arr = await detection_boxes.array()
+      console.log("ARRAY", arr)
+      const tensors = await Promise.all(
+        res.map(async (ts, i) => {
+          return await ts.buffer()
+        })
+      )
+      console.log("CALLING")
+      this.formatData2(tensors)
+      console.log("TENSORS", tensors)
+    } catch (err) {
+      console.log("ERROR ON INFERENCE", err)
+      fail = true
+    }
     this.setState({
       predicted: true,
+      fail,
     })
   }
   handleChange = event => {
@@ -327,6 +333,7 @@ class FishMobilenet extends Component {
         }
     return (
       <div>
+        {this.state.fail && <div>Failed to find fish</div>}
         <img
           id="rotated-visible"
           ref={this.rotatedRef}
@@ -354,7 +361,7 @@ class FishMobilenet extends Component {
         {!predicted && <canvas ref={this.testCanvasRef} id="resized" />}
         <div>SSD</div>
         {modelLoaded ? (
-          <button onClick={this.makePrediction}>Make Predition</button>
+          <button onClick={this.makePrediction}>Predict</button>
         ) : (
           <button onClick={this.loadModel}>Load Model</button>
         )}
