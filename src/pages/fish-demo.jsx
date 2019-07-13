@@ -1,9 +1,49 @@
 import React, { Component, createRef } from "react"
 import * as tf from "@tensorflow/tfjs"
+import ExifOrientationImg from "react-exif-orientation-img"
 import fish from "../images/fish3.jpg"
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
+
+const getOrientation = (file, callback) => {
+  console.log("FILE", file)
+  var reader = new FileReader()
+  reader.onload = e => {
+    var view = new DataView(e.target.result)
+    if (view.getUint16(0, false) != 0xffd8) {
+      return callback(-2)
+    }
+    var length = view.byteLength,
+      offset = 2
+    while (offset < length) {
+      if (view.getUint16(offset + 2, false) <= 8) return callback(-1)
+      var marker = view.getUint16(offset, false)
+      offset += 2
+      if (marker == 0xffe1) {
+        if (view.getUint32((offset += 2), false) != 0x45786966) {
+          return callback(-1)
+        }
+
+        var little = view.getUint16((offset += 6), false) == 0x4949
+        offset += view.getUint32(offset + 4, little)
+        var tags = view.getUint16(offset, little)
+        offset += 2
+        for (var i = 0; i < tags; i++) {
+          if (view.getUint16(offset + i * 12, little) == 0x0112) {
+            return callback(view.getUint16(offset + i * 12 + 8, little))
+          }
+        }
+      } else if ((marker & 0xff00) != 0xff00) {
+        break
+      } else {
+        offset += view.getUint16(offset, false)
+      }
+    }
+    return callback(-1)
+  }
+  reader.readAsArrayBuffer(file)
+}
 
 class FishMobilenet extends Component {
   state = {
@@ -20,6 +60,8 @@ class FishMobilenet extends Component {
   hiddenRef = createRef()
   imgRef = createRef()
   testCanvasRef = createRef()
+  rotatedRef = createRef()
+  rotationCanvasRef = createRef()
 
   drawBoxes = boxes => {
     const { current: img } = this.testCanvasRef
@@ -161,8 +203,9 @@ class FishMobilenet extends Component {
   }
 
   resize = () => {
+    console.log("RESIZING")
     const { current: canvas } = this.testCanvasRef
-    const { current: img } = this.hiddenRef
+    const { current: img } = this.rotatedRef
     const { innerWidth: maxWidth } = window
     let { height, width } = img
     console.log("ORIGINAN", width, height, width / height)
@@ -175,19 +218,89 @@ class FishMobilenet extends Component {
     const ctx = canvas.getContext("2d")
     canvas.width = width
     canvas.height = height
+    console.log("IMG", img)
     ctx.drawImage(img, 0, 0, width, height)
     // const resizedSrc = canvas.toDataUrl("image/png")
     // this.setState({
-    //   resizedW,
+    //   resizedW: ,
     //   resizedH,
+    // })
+  }
+
+  onLoad2 = () => {
+    console.log("ONLOAD 2")
+    const { orientation } = this.state
+    const { current: img } = this.hiddenRef
+    const width = img.width,
+      height = img.height
+
+    const { current: canvas } = this.rotationCanvasRef
+    const ctx = canvas.getContext("2d")
+
+    // set proper canvas dimensions before transform & export
+    if (4 < orientation && orientation < 9) {
+      canvas.width = height
+      canvas.height = width
+    } else {
+      canvas.width = width
+      canvas.height = height
+    }
+
+    // transform context before drawing image
+    switch (orientation) {
+      case 2:
+        ctx.transform(-1, 0, 0, 1, width, 0)
+        break
+      case 3:
+        ctx.transform(-1, 0, 0, -1, width, height)
+        break
+      case 4:
+        ctx.transform(1, 0, 0, -1, 0, height)
+        break
+      case 5:
+        ctx.transform(0, 1, 1, 0, 0, 0)
+        break
+      case 6:
+        ctx.transform(0, 1, -1, 0, height, 0)
+        break
+      case 7:
+        ctx.transform(0, -1, -1, 0, height, width)
+        break
+      case 8:
+        ctx.transform(0, -1, 1, 0, 0, width)
+        break
+      default:
+        break
+    }
+
+    // this.setState({
+    //   hiddenSrc: img,
+    // })
+
+    // draw image
+    ctx.drawImage(img, 0, 0)
+    // this.resize(img)
+
+    // // export base64
+    // callback(canvas.toDataURL());
+    // canvas.toBlob(blob => {
+    this.setState({
+      rotatedSrc: canvas.toDataURL(),
+    })
     // })
   }
 
   onUpload = event => {
     console.log("ON UPLOAD")
-    const image = URL.createObjectURL(event.target.files[0])
+    const hiddenSrc = URL.createObjectURL(event.target.files[0])
     const { current: img } = this.hiddenRef
-    img.src = image
+    getOrientation(event.target.files[0], orientation => {
+      this.setState({
+        orientation,
+        hiddenSrc,
+      })
+      console.log("orientation: " + orientation)
+    })
   }
 
   reset = () => {
@@ -197,6 +310,7 @@ class FishMobilenet extends Component {
   }
   render() {
     console.log("RENDER")
+    console.log(this.state)
     const { modelLoaded, file, predicted, maxWidth } = this.state
     const hidden = {
       display: "none",
@@ -214,17 +328,21 @@ class FishMobilenet extends Component {
     return (
       <div>
         <img
-          id="resized"
-          ref={this.resizedsRef}
-          src={this.resized}
-          src={this.resizeSrc}
+          id="rotated-visible"
+          ref={this.rotatedRef}
+          src={this.state.rotatedSrc}
+          onLoad={this.resize}
+          style={hidden}
         />
+        <img id="resized-visible" ref={this.resizedsRef} src={this.resizeSrc} />
         <img
-          src={this.hiddemSrc}
+          id="upload-hidden"
+          src={this.state.hiddenSrc}
           ref={this.hiddenRef}
           style={hidden}
-          onLoad={this.resize}
+          onLoad={this.onLoad2}
         />
+        <canvas ref={this.rotationCanvasRef} style={hidden} />
         <canvas ref={this.canvasRef} style={canvasStyle}></canvas>
         <img
           src={file}
