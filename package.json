@@ -20,7 +20,6 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-exif-orientation-img": "^0.1.5",
     "react-helmet": "^5.2.1",
     "react-rnd": "^9.2.0",
     "tfjs-yolo": "0.0.4"
