@@ -1,28 +1,28 @@
-import React, { Component, createRef } from "react"
+import React, { useState, useRef } from "react"
 import getOrientation from "../utils/getOrientation"
 import * as tf from "@tensorflow/tfjs"
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
 
-class FishMobilenet extends Component {
-  state = {
-    modelLoaded: false,
-    detected: false,
-    model: null,
-    downloadProgress: 0,
-    predicted: false,
-    resizedSrc: null,
-    hiddenRef: null,
-  }
-  canvasRef = createRef()
-  hiddenRef = createRef()
-  rotationCanvasRef = createRef()
+const FishMobilenet = () => {
+  const [modelLoaded, setModelLoaded] = useState(false)
+  const [model, setModel] = useState(null)
+  const [downloadProgress, setDownloadProgress] = useState(0)
+  const [predicted, setPredicted] = useState(false)
+  const [hiddenSrc, setHiddenSrc] = useState(null)
+  const [fail, setFail] = useState(false)
+  const [resized, setResized] = useState(false)
+  const [orientation, setOrientation] = useState(-1)
+  const inputRef = useRef()
+  const canvasRef = useRef()
+  const hiddenRef = useRef()
+  const rotationCanvasRef = useRef()
 
-  drawBoxes = boxes => {
-    const { current: img } = this.rotationCanvasRef
+  const drawBoxes = boxes => {
+    const { current: img } = rotationCanvasRef
     const { width: imgW, height: imgH } = img
-    const { current: canvas } = this.canvasRef
+    const { current: canvas } = canvasRef
     const ctx = canvas.getContext("2d")
     canvas.width = imgW
     canvas.height = imgH
@@ -44,7 +44,7 @@ class FishMobilenet extends Component {
     ctx.stroke()
   }
 
-  formatData = tensors => {
+  const formatData = tensors => {
     const [
       raw_detection_scores,
       raw_detection_boxes,
@@ -63,10 +63,10 @@ class FishMobilenet extends Component {
         boxes.push(box)
       }
     }
-    this.drawBoxes(boxes)
+    drawBoxes(boxes)
   }
 
-  loadModel = async () => {
+  const loadModel = async () => {
     const tensors = {}
     const tensorOrder = [
       "raw_detection_scores",
@@ -77,27 +77,27 @@ class FishMobilenet extends Component {
       "detection_classes",
     ]
     try {
-      const model = await tf.loadGraphModel(url, {
+      const loadedModel = await tf.loadGraphModel(url, {
         onProgress: (a, b, c) => {
           console.log("a", a)
           console.log("b", b)
           console.log("c", c)
         },
       })
-      this.setState({ model, modelLoaded: true })
-      console.log("model", model)
+      setModel(loadedModel)
+      setModelLoaded(true)
     } catch (err) {
       console.log("ERR", err)
     }
   }
 
-  makePrediction = async () => {
-    const { current: img } = this.rotationCanvasRef
-    let fail = false
+  const makePrediction = async () => {
+    const { current: img } = rotationCanvasRef
+    let predictionFailed = false
     try {
       const tfImg = tf.browser.fromPixels(img).toFloat()
       const expanded = tfImg.expandDims(0)
-      const res = await this.state.model.executeAsync(expanded)
+      const res = await model.executeAsync(expanded)
       const detection_boxes = res[2]
       const arr = await detection_boxes.array()
       const tensors = await Promise.all(
@@ -105,25 +105,22 @@ class FishMobilenet extends Component {
           return await ts.buffer()
         })
       )
-      this.formatData(tensors)
+      formatData(tensors)
     } catch (err) {
       console.log("ERROR ON INFERENCE", err)
-      fail = true
+      predictionFailed = true
     }
-    this.setState({
-      predicted: true,
-      fail,
-    })
+    setPredicted(true)
+    setFail(predictionFailed)
   }
 
-  handleLoad = () => {
+  const handleLoad = () => {
     console.log("ONLOAD 2")
-    const { orientation } = this.state
-    const { current: img } = this.hiddenRef
+    const { current: img } = hiddenRef
     const width = img.width,
       height = img.height
 
-    const { current: canvas } = this.rotationCanvasRef
+    const { current: canvas } = rotationCanvasRef
     const ctx = canvas.getContext("2d")
 
     // set proper canvas dimensions before transform & export
@@ -161,10 +158,10 @@ class FishMobilenet extends Component {
       default:
         break
     }
-    this.drawResized(img, canvas, ctx)
+    drawResized(img, canvas, ctx)
   }
 
-  drawResized = (img, canvas, ctx) => {
+  const drawResized = (img, canvas, ctx) => {
     const { innerWidth: maxWidth } = window
     let { height, width } = img
     if (width > maxWidth) {
@@ -175,70 +172,71 @@ class FishMobilenet extends Component {
     canvas.width = width
     canvas.height = height
     ctx.drawImage(img, 0, 0, width, height)
-    this.setState({
-      resized: true,
-    })
+    setResized(true)
   }
 
-  handleChange = event => {
+  const handleChange = event => {
     const hiddenSrc = URL.createObjectURL(event.target.files[0])
     getOrientation(event.target.files[0], orientation => {
-      this.setState({
-        orientation,
-        hiddenSrc,
-      })
+      setOrientation(orientation)
+      setHiddenSrc(hiddenSrc)
     })
   }
 
-  reset = () => {
-    this.setState({
-      predicted: false,
-      resized: false,
-    })
+  const reset = () => {
+    setPredicted(false)
+    setResized(false)
   }
-  render() {
-    const { modelLoaded, predicted, resized, hiddenSrc, fail } = this.state
-    const hidden = {
-      display: "none",
-    }
-    return (
-      <div>
-        {fail && <div>Failed to find fish</div>}
-        <img
-          id="hidden-upload-placeholder"
-          src={hiddenSrc}
-          ref={this.hiddenRef}
-          style={hidden}
-          onLoad={this.handleLoad}
-        />
-        <canvas
-          ref={this.rotationCanvasRef}
-          style={resized && !predicted ? {} : hidden}
-          id="adjusted-image"
-        />
-        <canvas
-          ref={this.canvasRef}
-          style={predicted ? {} : hidden}
-          id="prediction-output"
-        />
-        <div>SSD</div>
-        {modelLoaded ? (
-          <button onClick={this.makePrediction}>Predict</button>
-        ) : (
-          <button onClick={this.loadModel}>Load Model</button>
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          capture="camera"
-          onChange={this.handleChange}
-        />
-        {predicted && <button onClick={this.reset}>Reset</button>}
-      </div>
-    )
+
+  const triggerInput = () => {
+    inputRef.current.click()
   }
+
+  // const { modelLoaded, predicted, resized, hiddenSrc, fail } = state
+  const hidden = {
+    display: "none",
+  }
+  return (
+    <div>
+      {fail && <div>Failed to find fish</div>}
+      <img
+        id="hidden-upload-placeholder"
+        src={hiddenSrc}
+        ref={hiddenRef}
+        style={hidden}
+        onLoad={handleLoad}
+      />
+      <canvas
+        ref={rotationCanvasRef}
+        style={resized && !predicted ? {} : hidden}
+        id="adjusted-image"
+      />
+      <canvas
+        ref={canvasRef}
+        style={predicted ? {} : hidden}
+        id="prediction-output"
+      />
+      <div>SSD</div>
+      {modelLoaded ? (
+        <button onClick={makePrediction}>Predict</button>
+      ) : (
+        <button onClick={loadModel}>Load Model</button>
+      )}
+      <button href="#" onClick={triggerInput}>
+        Take a Photo
+      </button>
+      <input
+        type="file"
+        accept="image/*"
+        capture="camera"
+        onChange={handleChange}
+        ref={inputRef}
+        id="file-input"
+        style={hidden}
+      />
+      {predicted && <button onClick={reset}>Reset</button>}
+    </div>
+  )
 }
 
 export default FishMobilenet
-
-// export default () => <div>hi</div>
