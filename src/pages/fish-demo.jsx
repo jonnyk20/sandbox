@@ -3,11 +3,12 @@ import * as tf from "@tensorflow/tfjs"
 import getOrientation from "../utils/getOrientation"
 import DragBoxes from "../components/DragBoxes"
 import ProgressBar from "../components/ProgressBar"
+import "./fish-demo.css"
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
 
-const FishMobilenet = () => {
+const FishDemo = () => {
   const [modelLoaded, setModelLoaded] = useState(false)
   const [model, setModel] = useState(null)
   const [downloadProgress, setDownloadProgress] = useState(0)
@@ -17,19 +18,14 @@ const FishMobilenet = () => {
   const [resized, setResized] = useState(false)
   const [orientation, setOrientation] = useState(-1)
   const [predictions, setPredictions] = useState([])
+  const [divWidth, setDivWith] = useState("auto")
   const inputRef = useRef()
-  const canvasRef = useRef()
   const hiddenRef = useRef()
   const rotationCanvasRef = useRef()
 
   const drawBoxes = boxes => {
     const { current: img } = rotationCanvasRef
     const { width: imgW, height: imgH } = img
-    const { current: canvas } = canvasRef
-    const ctx = canvas.getContext("2d")
-    canvas.width = imgW
-    canvas.height = imgH
-    ctx.drawImage(img, 0, 0, img.width, img.height)
     const newPredictions = []
     boxes.forEach((topBox, index) => {
       const topLeft = [topBox[1] * imgW, topBox[0] * imgH]
@@ -174,6 +170,7 @@ const FishMobilenet = () => {
     }
     canvas.width = width
     canvas.height = height
+    setDivWith(width)
     ctx.drawImage(img, 0, 0, width, height)
     setResized(true)
   }
@@ -201,7 +198,7 @@ const FishMobilenet = () => {
   }
   const showProgress = downloadProgress !== 0 && downloadProgress !== 1
   return (
-    <div>
+    <div className="wrapper" style={resized ? { width: divWidth } : {}}>
       {fail && <div>Failed to find fish</div>}
       <img
         id="hidden-upload-placeholder"
@@ -212,13 +209,9 @@ const FishMobilenet = () => {
       />
       <canvas
         ref={rotationCanvasRef}
-        style={resized && !predicted ? {} : hidden}
+        // style={}
+        style={resized ? {} : hidden}
         id="adjusted-image"
-      />
-      <canvas
-        ref={canvasRef}
-        style={predicted ? {} : hidden}
-        id="prediction-output"
       />
       <div>SSD</div>
       {modelLoaded ? (
@@ -241,9 +234,14 @@ const FishMobilenet = () => {
         style={hidden}
       />
       {predicted && <button onClick={reset}>Reset</button>}
+      {/* 
+      <div className="boxes-outer">
+        <div className="boxes-inner"> */}
       {predictions.length > 0 && <DragBoxes boxes={predictions} />}
+      {/* </div>
+      </div> */}
     </div>
   )
 }
 
-export default FishMobilenet
+export default FishDemo

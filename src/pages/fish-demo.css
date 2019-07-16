@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+}
+
+.wrapper {
+  position: relative;
+  margin: 0 auto;
+  text-align: center;
+}
