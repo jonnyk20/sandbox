@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react"
-import getOrientation from "../utils/getOrientation"
 import * as tf from "@tensorflow/tfjs"
+import getOrientation from "../utils/getOrientation"
+import DragBoxes from "../components/DragBoxes"
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
@@ -14,6 +15,9 @@ const FishMobilenet = () => {
   const [fail, setFail] = useState(false)
   const [resized, setResized] = useState(false)
   const [orientation, setOrientation] = useState(-1)
+  const [predictions, setPredictions] = useState([
+    // { index: 0, x: 100, y: 100, w: 100, h: 100 },
+  ])
   const inputRef = useRef()
   const canvasRef = useRef()
   const hiddenRef = useRef()
@@ -27,7 +31,8 @@ const FishMobilenet = () => {
     canvas.width = imgW
     canvas.height = imgH
     ctx.drawImage(img, 0, 0, img.width, img.height)
-    boxes.forEach(topBox => {
+    const newPredictions = []
+    boxes.forEach((topBox, index) => {
       const topLeft = [topBox[1] * imgW, topBox[0] * imgH]
       const bottomRight = [topBox[3] * imgW, topBox[2] * imgH]
       const boxW = bottomRight[0] - topLeft[0]
@@ -39,8 +44,16 @@ const FishMobilenet = () => {
       ctx.fillStyle = "green"
       ctx.strokeStyle = "green"
       ctx.rect(boxX, boxY, boxW, boxH)
-      console.log({ boxX, boxY, boxW, boxH })
+      const newPrediction = {
+        index,
+        x: boxX,
+        y: boxY,
+        w: boxW,
+        h: boxH,
+      }
+      newPredictions.push(newPrediction)
     })
+    setPredictions(newPredictions)
     ctx.stroke()
   }
 
@@ -58,7 +71,6 @@ const FishMobilenet = () => {
     for (let i = 0; i < num_detections.values[0]; i++) {
       const n = i * 4
       const box = detection_boxes.values.slice(n, n + 4)
-      console.log("BOX", box)
       if (detection_scores.values[i] > 0.1) {
         boxes.push(box)
       }
@@ -235,6 +247,7 @@ const FishMobilenet = () => {
         style={hidden}
       />
       {predicted && <button onClick={reset}>Reset</button>}
+      {predictions.length > 0 && <DragBoxes boxes={predictions} />}
     </div>
   )
 }
