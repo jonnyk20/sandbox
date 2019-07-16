@@ -1,0 +1,24 @@
+.progress-bar {
+  position: relative;
+  height: 20px;
+  width: 350px;
+  background: #e3f2fd;
+}
+
+.progress-bar__filler {
+  background: #2196f3;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.2s ease-in;
+}
+
+.progress-bar__button {
+  margin-right: 10px;
+  padding: 7px 12px;
+  font-size: 14px;
+  background: #d14836;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  outline: 0;
+}

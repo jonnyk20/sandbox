@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react"
 import * as tf from "@tensorflow/tfjs"
 import getOrientation from "../utils/getOrientation"
 import DragBoxes from "../components/DragBoxes"
+import ProgressBar from "../components/ProgressBar"
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
@@ -15,9 +16,7 @@ const FishMobilenet = () => {
   const [fail, setFail] = useState(false)
   const [resized, setResized] = useState(false)
   const [orientation, setOrientation] = useState(-1)
-  const [predictions, setPredictions] = useState([
-    // { index: 0, x: 100, y: 100, w: 100, h: 100 },
-  ])
+  const [predictions, setPredictions] = useState([])
   const inputRef = useRef()
   const canvasRef = useRef()
   const hiddenRef = useRef()
@@ -39,11 +38,6 @@ const FishMobilenet = () => {
       const boxH = bottomRight[1] - topLeft[1]
       const boxX = topLeft[0]
       const boxY = topLeft[1]
-
-      ctx.lineWidth = 2
-      ctx.fillStyle = "green"
-      ctx.strokeStyle = "green"
-      ctx.rect(boxX, boxY, boxW, boxH)
       const newPrediction = {
         index,
         x: boxX,
@@ -54,7 +48,6 @@ const FishMobilenet = () => {
       newPredictions.push(newPrediction)
     })
     setPredictions(newPredictions)
-    ctx.stroke()
   }
 
   const formatData = tensors => {
@@ -90,10 +83,8 @@ const FishMobilenet = () => {
     ]
     try {
       const loadedModel = await tf.loadGraphModel(url, {
-        onProgress: (a, b, c) => {
-          console.log("a", a)
-          console.log("b", b)
-          console.log("c", c)
+        onProgress: downloadProgress => {
+          setDownloadProgress(downloadProgress)
         },
       })
       setModel(loadedModel)
@@ -208,6 +199,7 @@ const FishMobilenet = () => {
   const hidden = {
     display: "none",
   }
+  const showProgress = downloadProgress !== 0 && downloadProgress !== 1
   return (
     <div>
       {fail && <div>Failed to find fish</div>}
@@ -234,6 +226,8 @@ const FishMobilenet = () => {
       ) : (
         <button onClick={loadModel}>Load Model</button>
       )}
+      {showProgress && <ProgressBar progress={downloadProgress} />}
+
       <button href="#" onClick={triggerInput}>
         Take a Photo
       </button>
