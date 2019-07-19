@@ -219,38 +219,40 @@ const FishDemo = () => {
       />
       {resized && <div className="overlay" />}
       {predictions.length > 0 && <DragBoxes boxes={predictions} />}
+
       <div className={`control ${controlActiveClass}`}>
-        {modelLoaded ? (
-          <button onClick={makePrediction} className="control__button">
-            Predict
-          </button>
-        ) : (
-          <button onClick={loadModel} className="control__button">
-            Load Model
-          </button>
-        )}
-        {showProgress && <ProgressBar progress={downloadProgress} />}
+        <DragBoxWithState>
+          {modelLoaded ? (
+            <button onClick={makePrediction} className="control__button">
+              Predict
+            </button>
+          ) : (
+            <button onClick={loadModel} className="control__button">
+              Load Model
+            </button>
+          )}
+          {showProgress && <ProgressBar progress={downloadProgress} />}
 
-        <button href="#" onClick={triggerInput} className="control__button">
-          Take a Photo
-        </button>
-        {predicted && (
-          <button onClick={reset} className="control__button">
-            Reset
+          <button href="#" onClick={triggerInput} className="control__button">
+            Take a Photo
           </button>
-        )}
+          {predicted && (
+            <button onClick={reset} className="control__button">
+              Reset
+            </button>
+          )}
 
-        <input
-          type="file"
-          accept="image/*"
-          capture="camera"
-          onChange={handleChange}
-          ref={inputRef}
-          id="file-input"
-          className="control__input"
-        />
+          <input
+            type="file"
+            accept="image/*"
+            capture="camera"
+            onChange={handleChange}
+            ref={inputRef}
+            id="file-input"
+            className="control__input"
+          />
+        </DragBoxWithState>
       </div>
-      {/* <DragBoxWithState /> */}
     </div>
   )
 }

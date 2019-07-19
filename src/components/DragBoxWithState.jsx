@@ -1,4 +1,4 @@
-import React, { useState } from "React"
+import React, { Component } from "React"
 import PropTypes from "prop-types"
 import { Rnd } from "react-rnd"
 
@@ -7,43 +7,53 @@ const style = {
   alignItems: "center",
   justifyContent: "center",
   border: "solid 3px #ddd",
-  background: "rgba(75, 62, 217, 0.27058823529411763)",
+  background: "#00000094",
+  flexDirection: "column",
 }
 
-const DragBox = ({ children }) => {
-  // const { x, y, h, w, index } = box
-  const [x, setX] = useState(false)
-  // const [y, setY] = useState(0)
-  // const [w, setW] = useState(100)
-  // const [h, setH] = useState(100)
+const enable = {
+  bottom: false,
+  bottomLeft: false,
+  bottomRight: false,
+  left: false,
+  right: false,
+  top: false,
+  topLeft: false,
+  topRight: false,
+}
 
-  // const handleDragStop = (e, d) => {
-  //   const { x, y } = d
-  //   setX(x)
-  //   setY(y)
-  // }
+class DragBox extends Component {
+  state = {
+    width: 200,
+    height: 200,
+    x: 0,
+    y: 50,
+    isDragged: false,
+  }
 
-  // const handleResize = (e, direction, ref, delta, position) => {
-  //   const { width, height } = ref.style
-  //   const { x, y } = position
-  //   setW(width)
-  //   setH(height)
-  //   setX(x)
-  //   setY(y)
-  // }
-
-  return (
-    <Rnd
-      // onMouseDown={this.crop}
-      style={style}
-      size={{ width: 100, height: 100 }}
-      position={{ x: 0, y: 0 }}
-      onDragStop={() => {}}
-      onResize={() => {}}
-    >
-      <div onDoubleClick={() => console.log("hi")}>{children}</div>
-    </Rnd>
-  )
+  render() {
+    return (
+      <Rnd
+        className="test-b"
+        style={style}
+        size={{ width: this.state.width, height: this.state.height }}
+        position={{ x: this.state.x, y: this.state.y }}
+        onDragStop={(e, d) => {
+          this.setState({ x: d.x, y: d.y })
+        }}
+        onResize={(e, direction, ref, delta, position) => {
+          this.setState({
+            width: ref.style.width,
+            height: ref.style.height,
+            ...position,
+          })
+        }}
+        enableResizing={enable}
+      >
+        {this.props.children}
+      </Rnd>
+    )
+  }
 }
 
 DragBox.propTypes = {
