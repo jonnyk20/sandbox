@@ -7,3 +7,39 @@ body {
   margin: 0 auto;
   text-align: center;
 }
+
+.overlay {
+  background: #000000ab;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 50px auto;
+  top: 100px;
+  background: #00000094;
+  width: 200px;
+}
+
+.control.control--active {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  border: solid 1px #ffffff59;
+}
+
+.control__button {
+  margin: 10px 0;
+}
+
+.control__input {
+  display: none;
+}

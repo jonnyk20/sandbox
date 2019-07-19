@@ -3,7 +3,11 @@ import * as tf from "@tensorflow/tfjs"
 import getOrientation from "../utils/getOrientation"
 import DragBoxes from "../components/DragBoxes"
 import ProgressBar from "../components/ProgressBar"
+import DragBoxWithState from "../components/DragBoxWithState"
 import "./fish-demo.css"
+require("react-dom")
+window.React2 = require("react")
+console.log(window.React1 === window.React2)
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
@@ -197,6 +201,7 @@ const FishDemo = () => {
     display: "none",
   }
   const showProgress = downloadProgress !== 0 && downloadProgress !== 1
+  const controlActiveClass = resized ? "control--active" : ""
   return (
     <div className="wrapper" style={resized ? { width: divWidth } : {}}>
       {fail && <div>Failed to find fish</div>}
@@ -209,37 +214,43 @@ const FishDemo = () => {
       />
       <canvas
         ref={rotationCanvasRef}
-        // style={}
         style={resized ? {} : hidden}
         id="adjusted-image"
       />
-      <div>SSD</div>
-      {modelLoaded ? (
-        <button onClick={makePrediction}>Predict</button>
-      ) : (
-        <button onClick={loadModel}>Load Model</button>
-      )}
-      {showProgress && <ProgressBar progress={downloadProgress} />}
-
-      <button href="#" onClick={triggerInput}>
-        Take a Photo
-      </button>
-      <input
-        type="file"
-        accept="image/*"
-        capture="camera"
-        onChange={handleChange}
-        ref={inputRef}
-        id="file-input"
-        style={hidden}
-      />
-      {predicted && <button onClick={reset}>Reset</button>}
-      {/* 
-      <div className="boxes-outer">
-        <div className="boxes-inner"> */}
+      {resized && <div className="overlay" />}
       {predictions.length > 0 && <DragBoxes boxes={predictions} />}
-      {/* </div>
-      </div> */}
+      <div className={`control ${controlActiveClass}`}>
+        {modelLoaded ? (
+          <button onClick={makePrediction} className="control__button">
+            Predict
+          </button>
+        ) : (
+          <button onClick={loadModel} className="control__button">
+            Load Model
+          </button>
+        )}
+        {showProgress && <ProgressBar progress={downloadProgress} />}
+
+        <button href="#" onClick={triggerInput} className="control__button">
+          Take a Photo
+        </button>
+        {predicted && (
+          <button onClick={reset} className="control__button">
+            Reset
+          </button>
+        )}
+
+        <input
+          type="file"
+          accept="image/*"
+          capture="camera"
+          onChange={handleChange}
+          ref={inputRef}
+          id="file-input"
+          className="control__input"
+        />
+      </div>
+      {/* <DragBoxWithState /> */}
     </div>
   )
 }
