@@ -16,6 +16,7 @@ const FishDemo = () => {
   const [downloadProgress, setDownloadProgress] = useState(0)
   const [predicted, setPredicted] = useState(false)
   const [hiddenSrc, setHiddenSrc] = useState(null)
+  const [resizedSrc, setResizedSrc] = useState(null)
   const [fail, setFail] = useState(false)
   const [resized, setResized] = useState(false)
   const [orientation, setOrientation] = useState(0)
@@ -23,7 +24,9 @@ const FishDemo = () => {
   const [divWidth, setDivWith] = useState("auto")
   const inputRef = useRef()
   const hiddenRef = useRef()
+  const resizedRef = useRef()
   const rotationCanvasRef = useRef()
+  const hiddenCanvasRef = useRef()
 
   const drawBoxes = boxes => {
     const { current: img } = rotationCanvasRef
@@ -121,7 +124,7 @@ const FishDemo = () => {
     const width = img.width,
       height = img.height
 
-    const { current: canvas } = rotationCanvasRef
+    const { current: canvas } = hiddenCanvasRef
     const ctx = canvas.getContext("2d")
 
     // set proper canvas dimensions before transform & export
@@ -159,12 +162,18 @@ const FishDemo = () => {
       default:
         break
     }
-    drawResized(img, canvas, ctx)
+    ctx.drawImage(img, 0, 0)
+    setResizedSrc(canvas.toDataURL())
+    // drawResized(img, canvas, ctx)
   }
 
-  const drawResized = (img, canvas, ctx) => {
+  const resize = () => {
     const { innerWidth: maxWidth } = window
-    let { height, width } = canvas
+    const { current: canvas } = rotationCanvasRef
+    const ctx = canvas.getContext("2d")
+    const { current: img } = resizedRef
+    let { height, width } = img
+
     if (width > maxWidth) {
       const ratio = width / height
       width = maxWidth
@@ -200,6 +209,8 @@ const FishDemo = () => {
   }
   const showProgress = downloadProgress !== 0 && downloadProgress !== 1
   const controlActiveClass = resized ? "control--active" : ""
+
+  console.log("resizedSrc", resizedSrc)
   return (
     <div className="wrapper" style={resized ? { width: divWidth } : {}}>
       {fail && <div>Failed to find fish</div>}
@@ -210,6 +221,14 @@ const FishDemo = () => {
         style={hidden}
         onLoad={handleLoad}
       />
+      <img
+        id="resized-placeholder"
+        src={resizedSrc}
+        ref={resizedRef}
+        style={hidden}
+        onLoad={resize}
+      />
+      <canvas ref={hiddenCanvasRef} id="hidden-canvas" style={hidden} />
       <canvas
         ref={rotationCanvasRef}
         style={resized ? {} : hidden}
