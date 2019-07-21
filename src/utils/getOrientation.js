@@ -32,7 +32,7 @@ export default (file, callback) => {
         offset += view.getUint16(offset, false)
       }
     }
-    return callback(-1)
+    return callback(0)
   }
   reader.readAsArrayBuffer(file)
 }

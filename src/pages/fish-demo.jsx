@@ -18,7 +18,7 @@ const FishDemo = () => {
   const [hiddenSrc, setHiddenSrc] = useState(null)
   const [fail, setFail] = useState(false)
   const [resized, setResized] = useState(false)
-  const [orientation, setOrientation] = useState(-1)
+  const [orientation, setOrientation] = useState(0)
   const [predictions, setPredictions] = useState([])
   const [divWidth, setDivWith] = useState("auto")
   const inputRef = useRef()
@@ -241,7 +241,7 @@ const FishDemo = () => {
               Reset
             </button>
           )}
-
+          <div class="test">Orientation: {orientation}</div>
           <input
             type="file"
             accept="image/*"
