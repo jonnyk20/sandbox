@@ -1,4 +1,4 @@
-import React, { useState } from "React"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { Rnd } from "react-rnd"
 
