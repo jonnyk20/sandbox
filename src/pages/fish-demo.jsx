@@ -4,6 +4,7 @@ import getOrientation from "../utils/getOrientation"
 import DragBoxes from "../components/DragBoxes"
 import ProgressBar from "../components/ProgressBar"
 import DragBoxWithState from "../components/DragBoxWithState"
+import LoadingSpinner from "../components/LoadingSpinner"
 import disablePageDrag from "../utils/disablePageDrag"
 import "./fish-demo.css"
 
@@ -16,6 +17,7 @@ const FishDemo = () => {
   const [model, setModel] = useState(null)
   const [downloadProgress, setDownloadProgress] = useState(0)
   const [predicted, setPredicted] = useState(false)
+  const [isPredictig, setIsPredicting] = useState(false)
   const [hiddenSrc, setHiddenSrc] = useState(null)
   const [resizedSrc, setResizedSrc] = useState(null)
   const [fail, setFail] = useState(false)
@@ -99,6 +101,7 @@ const FishDemo = () => {
   const makePrediction = async () => {
     const { current: img } = rotationCanvasRef
     let predictionFailed = false
+    setIsPredicting(true)
     try {
       const tfImg = tf.browser.fromPixels(img).toFloat()
       const expanded = tfImg.expandDims(0)
@@ -116,6 +119,7 @@ const FishDemo = () => {
       predictionFailed = true
     }
     setPredicted(true)
+    setIsPredicting(false)
     setFail(predictionFailed)
   }
 
@@ -240,11 +244,12 @@ const FishDemo = () => {
 
       <div className={`control ${controlActiveClass}`}>
         <DragBoxWithState>
-          {modelLoaded && resized && (
+          {modelLoaded && resized && !isPredictig && (
             <button onClick={makePrediction} className="control__button">
               Predict
             </button>
           )}
+          {isPredictig && <LoadingSpinner />}
           {!modelLoaded && (
             <button onClick={loadModel} className="control__button">
               Load Model
@@ -260,7 +265,6 @@ const FishDemo = () => {
               Reset
             </button>
           )}
-          <div class="test">Orientation: {orientation}</div>
           <input
             type="file"
             accept="image/*"
