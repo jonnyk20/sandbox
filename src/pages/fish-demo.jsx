@@ -195,7 +195,6 @@ const FishDemo = () => {
     inputRef.current.click()
   }
 
-  // const { modelLoaded, predicted, resized, hiddenSrc, fail } = state
   const hidden = {
     display: "none",
   }
