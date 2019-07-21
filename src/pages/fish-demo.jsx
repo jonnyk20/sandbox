@@ -6,8 +6,6 @@ import ProgressBar from "../components/ProgressBar"
 import DragBoxWithState from "../components/DragBoxWithState"
 import "./fish-demo.css"
 require("react-dom")
-window.React2 = require("react")
-console.log(window.React1 === window.React2)
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
@@ -190,6 +188,7 @@ const FishDemo = () => {
   const reset = () => {
     setPredicted(false)
     setResized(false)
+    setPredictions([])
   }
 
   const triggerInput = () => {
@@ -222,11 +221,12 @@ const FishDemo = () => {
 
       <div className={`control ${controlActiveClass}`}>
         <DragBoxWithState>
-          {modelLoaded ? (
+          {modelLoaded && resized && (
             <button onClick={makePrediction} className="control__button">
               Predict
             </button>
-          ) : (
+          )}
+          {!modelLoaded && (
             <button onClick={loadModel} className="control__button">
               Load Model
             </button>
