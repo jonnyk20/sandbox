@@ -1,16 +1,17 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import * as tf from "@tensorflow/tfjs"
 import getOrientation from "../utils/getOrientation"
 import DragBoxes from "../components/DragBoxes"
 import ProgressBar from "../components/ProgressBar"
 import DragBoxWithState from "../components/DragBoxWithState"
+import disablePageDrag from "../utils/disablePageDrag"
 import "./fish-demo.css"
-require("react-dom")
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
 
 const FishDemo = () => {
+  useEffect(disablePageDrag)
   const [modelLoaded, setModelLoaded] = useState(false)
   const [model, setModel] = useState(null)
   const [downloadProgress, setDownloadProgress] = useState(0)
