@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import DragBox from "./Dragbox"
+import DragBox from "./DragBox"
 
 export default ({ boxes }) => {
   const [dragBboxes, setDragBoxes] = useState(boxes)
