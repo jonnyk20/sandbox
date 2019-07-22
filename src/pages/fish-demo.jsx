@@ -24,12 +24,14 @@ const FishDemo = () => {
   const [resized, setResized] = useState(false)
   const [orientation, setOrientation] = useState(0)
   const [predictions, setPredictions] = useState([])
+  const [crops, setCrops] = useState([])
   const [divWidth, setDivWith] = useState("auto")
   const inputRef = useRef()
   const hiddenRef = useRef()
   const resizedRef = useRef()
   const rotationCanvasRef = useRef()
   const hiddenCanvasRef = useRef()
+  const cropRef = useRef()
 
   const drawBoxes = boxes => {
     const { current: img } = rotationCanvasRef
@@ -52,6 +54,8 @@ const FishDemo = () => {
       newPredictions.push(newPrediction)
     })
     setPredictions(newPredictions)
+    setCrops(newPredictions[0])
+    renderCropped(newPredictions[0])
   }
 
   const formatData = tensors => {
@@ -172,6 +176,34 @@ const FishDemo = () => {
     // drawResized(img, canvas, ctx)
   }
 
+  const renderCropped = (
+    box = {
+      x: 200,
+      y: 150,
+      w: 200,
+      h: 200,
+    }
+  ) => {
+    console.log("RENDERCROPPED")
+    const { current: source } = rotationCanvasRef
+    const { current: target } = cropRef
+    const { x, width: w, height: h } = source.getBoundingClientRect()
+    const A = box.x // x
+    const B = box.y // y
+    const C = w // w original
+    const D = h // h original
+    const E = 0
+    const F = 0
+    const G = w // w original (scale)
+    const H = h // h original (scale)
+    console.log("BOX", box)
+    const ctx = target.getContext("2d")
+    target.height = box.h // cropH
+    target.width = box.w // cropW
+
+    ctx.drawImage(source, A, B, C, D, E, F, G, H)
+  }
+
   const resize = () => {
     const { innerWidth: maxWidth } = window
     const { current: canvas } = rotationCanvasRef
@@ -214,8 +246,7 @@ const FishDemo = () => {
   }
   const showProgress = downloadProgress !== 0 && downloadProgress !== 1
   const controlActiveClass = resized ? "control--active" : ""
-
-  console.log("resizedSrc", resizedSrc)
+  console.log("cropRef", cropRef)
   return (
     <div className="wrapper" style={resized ? { width: divWidth } : {}}>
       {fail && <div>Failed to find fish</div>}
@@ -239,7 +270,7 @@ const FishDemo = () => {
         style={resized ? {} : hidden}
         id="adjusted-image"
       />
-      {resized && <div className="overlay" />}
+      {/* {resized && <div className="overlay" />} */}
       {predictions.length > 0 && <DragBoxes boxes={predictions} />}
 
       <div className={`control ${controlActiveClass}`}>
@@ -265,6 +296,7 @@ const FishDemo = () => {
               Reset
             </button>
           )}
+          <button onClick={renderCropped}>Crop</button>
           <input
             type="file"
             accept="image/*"
@@ -276,6 +308,7 @@ const FishDemo = () => {
           />
         </DragBoxWithState>
       </div>
+      <canvas className="cropped" ref={cropRef} />
     </div>
   )
 }

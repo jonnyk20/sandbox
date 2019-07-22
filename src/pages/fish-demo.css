@@ -43,3 +43,7 @@ body {
 .test {
   color: white;
 }
+
+.cropped {
+  top: 0;
+}

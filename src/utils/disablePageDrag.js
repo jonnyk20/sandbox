@@ -1,6 +1,5 @@
 export default () => {
   document.body.style.overflow = "hidden"
-  console.log("Another one")
   document.addEventListener(
     "touchmove",
     function(e) {
