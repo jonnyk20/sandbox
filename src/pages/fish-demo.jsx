@@ -76,6 +76,7 @@ const FishDemo = () => {
       const n = i * 4
       const box = detection_boxes.values.slice(n, n + 4)
       if (detection_scores.values[i] > 0.1) {
+        console.log("SCORE", detection_scores.values[i])
         boxes.push(box)
       }
     }
@@ -241,7 +242,7 @@ const FishDemo = () => {
   }
 
   const getSamplePhoto = () => {
-    setHiddenSrc(sampleFishPhoto)
+    setResizedSrc(sampleFishPhoto)
   }
 
   const reset = e => {
@@ -249,6 +250,7 @@ const FishDemo = () => {
     setPredicted(false)
     setResized(false)
     setPredictions([])
+    setResizedSrc(null)
   }
 
   const triggerInput = () => {
@@ -260,7 +262,7 @@ const FishDemo = () => {
   }
   const showProgress = downloadProgress !== 0 && downloadProgress !== 1
   const controlActiveClass = resized ? "control--active" : ""
-  console.log("cropRef", cropRef)
+  console.log("RESIZED", resized)
   return (
     <div
       className="wrapper"
@@ -343,7 +345,7 @@ const FishDemo = () => {
           />
         </DragBoxWithState>
       </div>
-      <canvas className="cropped" ref={cropRef} />
+      <canvas className="cropped" ref={cropRef} style={hidden} />
     </div>
   )
 }
