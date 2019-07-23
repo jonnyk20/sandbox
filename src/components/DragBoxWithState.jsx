@@ -2,15 +2,6 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Rnd } from "react-rnd"
 
-const style = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  border: "solid 3px #ddd",
-  background: "#00000094",
-  flexDirection: "column",
-}
-
 const enable = {
   bottom: false,
   bottomLeft: false,
@@ -25,7 +16,7 @@ const enable = {
 class DragBox extends Component {
   state = {
     width: 200,
-    height: 200,
+    height: 250,
     x: 0,
     y: 50,
     isDragged: false,
@@ -34,8 +25,7 @@ class DragBox extends Component {
   render() {
     return (
       <Rnd
-        className="test-b"
-        style={style}
+        className="drag-box drag-box--control"
         size={{ width: this.state.width, height: this.state.height }}
         position={{ x: this.state.x, y: this.state.y }}
         onDragStop={(e, d) => {

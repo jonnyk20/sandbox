@@ -2,14 +2,6 @@ import React from "react"
 import PropTypes from "prop-types"
 import { Rnd } from "react-rnd"
 
-const style = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  border: "solid 3px #ddd",
-  background: "rgba(75, 62, 217, 0.27058823529411763)",
-}
-
 const DragBox = ({ box, resizeBox, repositionBox }) => {
   const { x, y, h, w, index } = box
   console.log("BOX.", box)
@@ -25,13 +17,13 @@ const DragBox = ({ box, resizeBox, repositionBox }) => {
   return (
     <Rnd
       // onMouseDown={this.crop}
-      style={style}
+      className="drag-box"
       size={{ width: w, height: h }}
       position={{ x, y }}
       onDragStop={handleDragStop}
       onResize={handleResize}
     >
-      <div onDoubleClick={() => console.log("hi")}>Box</div>
+      <div onDoubleClick={() => {}}>+</div>
     </Rnd>
   )
 }

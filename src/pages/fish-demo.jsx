@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, Fragment } from "react"
 import * as tf from "@tensorflow/tfjs"
 import getOrientation from "../utils/getOrientation"
 import DragBoxes from "../components/DragBoxes"
@@ -6,7 +6,9 @@ import ProgressBar from "../components/ProgressBar"
 import DragBoxWithState from "../components/DragBoxWithState"
 import LoadingSpinner from "../components/LoadingSpinner"
 import disablePageDrag from "../utils/disablePageDrag"
+import sampleFishPhoto from "../images/sample-aquarium.jpeg"
 import "./fish-demo.css"
+import "./fish-demo.scss"
 
 const url =
   "https://jk-fish-test.s3.us-east-2.amazonaws.com/fish_mobilenet2/model.json"
@@ -26,6 +28,7 @@ const FishDemo = () => {
   const [predictions, setPredictions] = useState([])
   const [crops, setCrops] = useState([])
   const [divWidth, setDivWith] = useState("auto")
+  const [divHeight, setDivHeight] = useState("auto")
   const inputRef = useRef()
   const hiddenRef = useRef()
   const resizedRef = useRef()
@@ -97,8 +100,17 @@ const FishDemo = () => {
       })
       setModel(loadedModel)
       setModelLoaded(true)
+      // try {
+      //   const warmupResult = await loadedModel.executeAsync(
+      //     tf.zeros([1, 300, 300, 3])
+      //   )
+      //   console.log("RESUKT", warmupResult)
+      // } catch (err) {
+      //   console.log("ERROR ON TEST RUN", err)
+      // }
+      console.log("HAAAA")
     } catch (err) {
-      console.log("ERR", err)
+      console.log("ERROR ON LOAD", err)
     }
   }
 
@@ -212,6 +224,7 @@ const FishDemo = () => {
     canvas.width = width
     canvas.height = height
     setDivWith(width)
+    setDivHeight(height)
     ctx.drawImage(img, 0, 0, width, height)
     setResized(true)
   }
@@ -227,7 +240,12 @@ const FishDemo = () => {
     }
   }
 
-  const reset = () => {
+  const getSamplePhoto = () => {
+    setHiddenSrc(sampleFishPhoto)
+  }
+
+  const reset = e => {
+    e.stopPropagation()
     setPredicted(false)
     setResized(false)
     setPredictions([])
@@ -244,7 +262,10 @@ const FishDemo = () => {
   const controlActiveClass = resized ? "control--active" : ""
   console.log("cropRef", cropRef)
   return (
-    <div className="wrapper" style={resized ? { width: divWidth } : {}}>
+    <div
+      className="wrapper"
+      style={resized ? { width: divWidth, height: divHeight } : {}}
+    >
       {fail && <div>Failed to find fish</div>}
       <img
         id="hidden-upload-placeholder"
@@ -266,14 +287,15 @@ const FishDemo = () => {
         style={resized ? {} : hidden}
         id="adjusted-image"
       />
-      {/* {resized && <div className="overlay" />} */}
+      {resized && <div className="overlay" />}
       {predictions.length > 0 && <DragBoxes boxes={predictions} />}
 
       <div className={`control ${controlActiveClass}`}>
         <DragBoxWithState>
-          {modelLoaded && resized && !isPredictig && (
+          <div className="move-target">≡</div>
+          {modelLoaded && resized && !isPredictig && !predicted && (
             <button onClick={makePrediction} className="control__button">
-              Predict
+              Find Fish
             </button>
           )}
           {isPredictig && <LoadingSpinner />}
@@ -284,15 +306,32 @@ const FishDemo = () => {
           )}
           {showProgress && <ProgressBar progress={downloadProgress} />}
 
-          <button href="#" onClick={triggerInput} className="control__button">
-            Take a Photo
-          </button>
+          {modelLoaded && !isPredictig && !predicted && !resized && (
+            <Fragment>
+              <button
+                href="#"
+                onClick={triggerInput}
+                className="control__button"
+              >
+                Find Fish with <br />
+                Your Phone Camera
+              </button>
+              <div className="separator">- OR -</div>
+              <button
+                href="#"
+                onClick={getSamplePhoto}
+                className="control__button"
+              >
+                Use a Sample Photo
+              </button>
+            </Fragment>
+          )}
           {predicted && (
             <button onClick={reset} className="control__button">
               Reset
             </button>
           )}
-          <button onClick={renderCropped}>Crop</button>
+
           <input
             type="file"
             accept="image/*"
