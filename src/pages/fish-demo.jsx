@@ -268,7 +268,6 @@ const FishDemo = () => {
       className="wrapper"
       style={resized ? { width: divWidth, height: divHeight } : {}}
     >
-      {fail && <div>Failed to find fish</div>}
       <img
         id="hidden-upload-placeholder"
         src={hiddenSrc}
@@ -328,6 +327,8 @@ const FishDemo = () => {
               </button>
             </Fragment>
           )}
+          {fail && <div>Failed to Find Fish</div>}
+          <br />
           {predicted && (
             <button onClick={reset} className="control__button">
               Reset
