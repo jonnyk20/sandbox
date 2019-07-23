@@ -176,14 +176,7 @@ const FishDemo = () => {
     // drawResized(img, canvas, ctx)
   }
 
-  const renderCropped = (
-    box = {
-      x: 200,
-      y: 150,
-      w: 200,
-      h: 200,
-    }
-  ) => {
+  const renderCropped = box => {
     console.log("RENDERCROPPED")
     const { current: source } = rotationCanvasRef
     const { current: target } = cropRef
@@ -224,11 +217,14 @@ const FishDemo = () => {
   }
 
   const handleChange = event => {
-    const hiddenSrc = URL.createObjectURL(event.target.files[0])
-    getOrientation(event.target.files[0], orientation => {
-      setOrientation(orientation)
-      setHiddenSrc(hiddenSrc)
-    })
+    const { files } = event.target
+    if (files.length > 0) {
+      const hiddenSrc = URL.createObjectURL(event.target.files[0])
+      getOrientation(event.target.files[0], orientation => {
+        setOrientation(orientation)
+        setHiddenSrc(hiddenSrc)
+      })
+    }
   }
 
   const reset = () => {
