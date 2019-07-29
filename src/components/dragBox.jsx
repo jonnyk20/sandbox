@@ -23,7 +23,7 @@ const DragBox = ({ box, resizeBox, repositionBox }) => {
       onDragStop={handleDragStop}
       onResize={handleResize}
     >
-      <div onDoubleClick={() => {}}>+</div>
+      <div onDoubleClick={() => {}}>Map Turtle</div>
     </Rnd>
   )
 }

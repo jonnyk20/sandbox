@@ -101,14 +101,14 @@ const FishDemo = () => {
       })
       setModel(loadedModel)
       setModelLoaded(true)
-      // try {
-      //   const warmupResult = await loadedModel.executeAsync(
-      //     tf.zeros([1, 300, 300, 3])
-      //   )
-      //   console.log("RESUKT", warmupResult)
-      // } catch (err) {
-      //   console.log("ERROR ON TEST RUN", err)
-      // }
+      try {
+        const warmupResult = await loadedModel.executeAsync(
+          tf.zeros([1, 300, 300, 3])
+        )
+        console.log("RESUKT", warmupResult)
+      } catch (err) {
+        console.log("ERROR ON TEST RUN", err)
+      }
       console.log("HAAAA")
     } catch (err) {
       console.log("ERROR ON LOAD", err)
@@ -314,7 +314,7 @@ const FishDemo = () => {
                 onClick={triggerInput}
                 className="control__button"
               >
-                Find Fish with <br />
+                Find Animals with <br />
                 Your Phone Camera
               </button>
               <div className="separator">- OR -</div>
@@ -327,7 +327,7 @@ const FishDemo = () => {
               </button>
             </Fragment>
           )}
-          {fail && <div>Failed to Find Fish</div>}
+          {fail && <div>Failed to Find Animals</div>}
           <br />
           {predicted && (
             <button onClick={reset} className="control__button">
