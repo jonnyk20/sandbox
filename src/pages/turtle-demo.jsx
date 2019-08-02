@@ -291,62 +291,66 @@ const FishDemo = () => {
       {resized && <div className="overlay" />}
       {predictions.length > 0 && <DragBoxes boxes={predictions} />}
 
-      <div className={`control ${controlActiveClass}`}>
-        <DragBoxWithState>
-          <div className="move-target">≡</div>
-          {modelLoaded && resized && !isPredictig && !predicted && (
-            <button onClick={makePrediction} className="control__button">
-              Find Animals
-            </button>
-          )}
-          {isPredictig && <LoadingSpinner />}
-          {!modelLoaded && (
-            <button onClick={loadModel} className="control__button">
-              Load Model
-            </button>
-          )}
-          {showProgress && <ProgressBar progress={downloadProgress} />}
-
-          {modelLoaded && !isPredictig && !predicted && !resized && (
-            <Fragment>
-              <button
-                href="#"
-                onClick={triggerInput}
-                className="control__button"
-              >
-                Find Animals with <br />
-                Your Phone Camera
+      {!predicted && ( // remove (JK)
+        <div className={`control ${controlActiveClass}`}>
+          <DragBoxWithState>
+            <div className="move-target">≡</div>
+            {modelLoaded && resized && !isPredictig && !predicted && (
+              <button onClick={makePrediction} className="control__button">
+                Find Animals
               </button>
-              <div className="separator">- OR -</div>
-              <button
-                href="#"
-                onClick={getSamplePhoto}
-                className="control__button"
-              >
-                Use a Sample Photo
+            )}
+            {isPredictig && <LoadingSpinner />}
+            {!modelLoaded && (
+              <button onClick={loadModel} className="control__button">
+                Load Model
               </button>
-            </Fragment>
-          )}
-          {fail && <div>Failed to Find Animals</div>}
-          <br />
-          {predicted && (
-            <button onClick={reset} className="control__button">
-              Reset
-            </button>
-          )}
+            )}
+            {showProgress && <ProgressBar progress={downloadProgress} />}
 
-          <input
-            type="file"
-            accept="image/*"
-            capture="camera"
-            onChange={handleChange}
-            ref={inputRef}
-            id="file-input"
-            className="control__input"
-          />
-        </DragBoxWithState>
-      </div>
+            {modelLoaded && !isPredictig && !predicted && !resized && (
+              <Fragment>
+                <button
+                  href="#"
+                  onClick={triggerInput}
+                  className="control__button"
+                >
+                  Find Animals with <br />
+                  Your Phone Camera
+                </button>
+                {/* <div className="separator">- OR -</div>
+                <button
+                  href="#"
+                  onClick={getSamplePhoto}
+                  className="control__button"
+                >
+                  Use a Sample Photo
+                </button> */}
+              </Fragment>
+            )}
+            {fail && <div>Failed to Find Animals</div>}
+            <br />
+
+            <input
+              type="file"
+              accept="image/*"
+              capture="camera"
+              onChange={handleChange}
+              ref={inputRef}
+              id="file-input"
+              className="control__input"
+            />
+          </DragBoxWithState>
+        </div>
+      )}
       <canvas className="cropped" ref={cropRef} style={hidden} />
+      {predicted && (
+        <div className="reset_box">
+          <button onClick={reset} className="control__button">
+            Reset
+          </button>
+        </div>
+      )}
     </div>
   )
 }

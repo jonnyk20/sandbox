@@ -6,6 +6,7 @@ body {
   font-family: "Montserrat", sans-serif;
   font-weight: lighter;
   background: black;
+  color: white;
 }
 
 .wrapper {
@@ -71,10 +72,21 @@ body {
 .drag-box--control {
   border-width: 3px;
 
+  background: none; // (JK
+  border: none; // (JK
+
   .move-target {
     position: absolute;
     top: 0px;
     right: 10px;
     font-size: 30px;
+    display: none; // (JK
   }
+}
+
+.reset_box {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
 }

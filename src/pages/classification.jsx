@@ -74,6 +74,7 @@ const runCustom = async () => {
 class Classification extends Component {
   handleLoad = async () => {
     // runMobilenet()
+    console.log('HAAI')
     runCustom()
   }
   render() {

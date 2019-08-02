@@ -23,7 +23,9 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-helmet": "^5.2.1",
+    "react-redux": "^7.1.0",
     "react-rnd": "^9.2.0",
+    "redux": "^4.0.4",
     "tfjs-yolo": "0.0.4"
   },
   "devDependencies": {
