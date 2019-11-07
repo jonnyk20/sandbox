@@ -8,6 +8,9 @@ import SEO from "../components/seo"
 const IndexPage = () => (
   <Layout>
     <div>
+      <Link to="/rockfish-demo/">Rockfish Demo</Link>
+    </div>
+    <div>
       <Link to="/fish-demo-home/">Fish-Demo-Home</Link>
     </div>
     <div>
