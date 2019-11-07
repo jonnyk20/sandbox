@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import * as tf from "@tensorflow/tfjs"
 import * as mobilenet from "@tensorflow-models/mobilenet"
-import dog from "../images/dog.jpg"
+import sample from "../images/fish.png"
 import { getRegisteredOp } from "@tensorflow/tfjs-converter/dist/src/operations/custom_op/register"
 
 const runMobilenet = async () => {
@@ -49,8 +49,9 @@ const getFinal = results => {
 }
 
 const runCustom = async () => {
+  console.log("CUSTOM")
   const MODEL_URL =
-    "https://storage.googleapis.com/tfjs-models/savedmodel/mobilenet_v2_1.0_224/model.json"
+    "https://jk-fish-test.s3.us-east-2.amazonaws.com/test_fish_classifier/model.json"
   const model = await tf.loadGraphModel(MODEL_URL)
   const img = document.getElementById("img")
   const tfImg = tf.browser.fromPixels(img).toFloat()
@@ -74,7 +75,7 @@ const runCustom = async () => {
 class Classification extends Component {
   handleLoad = async () => {
     // runMobilenet()
-    console.log('HAAI')
+    console.log("HAAI")
     runCustom()
   }
   render() {
@@ -82,7 +83,7 @@ class Classification extends Component {
       <div>
         <div>Classification</div>
         <div>
-          <img src={dog} onLoad={this.handleLoad} id="img" />
+          <img src={sample} onLoad={this.handleLoad} id="img" />
         </div>
       </div>
     )

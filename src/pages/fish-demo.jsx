@@ -189,6 +189,43 @@ const FishDemo = () => {
     // drawResized(img, canvas, ctx)
   }
 
+  const getFinal = results => {
+    let predictionList = []
+    for (let i = 0; i < results.length; i++) {
+      predictionList.push({ value: results[i], index: i })
+    }
+    predictionList = predictionList.sort((a, b) => {
+      return b.value - a.value
+    })
+
+    console.log("FINAL RESULTS", predictionList)
+  }
+
+  const runCustom = async () => {
+    console.log("RUNNING CLASSIFICATION")
+    const MODEL_URL =
+      "https://jk-fish-test.s3.us-east-2.amazonaws.com/test_fish_classifier/model.json"
+    const model = await tf.loadGraphModel(MODEL_URL)
+    console.log("LOADED CLASSIFICATION MODEL")
+    const { current: img } = cropRef
+    const tfImg = tf.browser.fromPixels(img).toFloat()
+    let input = tf.image.resizeBilinear(tfImg, [224, 224])
+    const offset = tf.scalar(127.5)
+    // Normalize the image
+    input = input.sub(offset).div(offset)
+
+    const global = input.expandDims(0)
+    console.log(global.shape)
+    const results = model.predict(global)
+    const ok = await results.buffer()
+
+    console.log("CLASSIFICATION", ok.values)
+    // const best = results.buffer() //.buffer().values[0]
+    // const x = await best.buffer()
+    // console.log("BEST", x.values)
+    getFinal(ok.values)
+  }
+
   const renderCropped = box => {
     console.log("RENDERCROPPED")
     const { current: source } = rotationCanvasRef
@@ -208,6 +245,7 @@ const FishDemo = () => {
     target.width = box.w // cropW
 
     ctx.drawImage(source, A, B, C, D, E, F, G, H)
+    runCustom()
   }
 
   const resize = () => {

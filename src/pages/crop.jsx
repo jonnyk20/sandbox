@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react"
-import dog from "../images/dog.jpg"
+import dog from "../images/labrador.jpg"
 
 const style = {
   width: "50px",
@@ -9,6 +9,9 @@ const cStyle = {
   position: "absolute",
   right: "100px",
 }
+
+const naturalHeight = 500
+const naturalWidth = 500
 
 const Crop = () => {
   const canvasRef = useRef(null)
@@ -23,19 +26,19 @@ const Crop = () => {
   const [isLoaded, setLoaded] = useState(false)
   const [A, setA] = useState(0)
   const [B, setB] = useState(0)
-  const [C, setC] = useState(500)
-  const [D, setD] = useState(500)
+  const [C, setC] = useState(naturalWidth)
+  const [D, setD] = useState(naturalHeight)
   const [E, setE] = useState(0)
   const [F, setF] = useState(0)
-  const [G, setG] = useState(500)
-  const [H, setH] = useState(500)
+  const [G, setG] = useState(300)
+  const [H, setH] = useState(300)
+  const [width, setWidth] = useState(300)
+  const [height, setHeight] = useState(300)
   const [src, setSrc] = useState(null)
   const { current: img } = imgRef
   console.log("IMG", img)
   if (isLoaded) {
-    const x = 500
-    const width = x + A
-    const height = x + B
+
     console.log("HEIGHT", height)
     const canvas = document.getElementById("canvas")
     const ctx = canvas.getContext("2d")
@@ -48,7 +51,7 @@ const Crop = () => {
       <div style={cStyle}>
         <canvas id="canvas" ref={canvasRef}></canvas>
       </div>
-      <img src={dog} id="img" onLoad={() => setLoaded(true)} ref={imgRef} />
+      <img src={dog} id="img" onLoad={() => setLoaded(true)} ref={imgRef} width="300px" height="300px" />
       <div>
         <a
           href="#"
@@ -133,6 +136,27 @@ const Crop = () => {
             style={style}
           />
         </span>
+        <div>
+        <span>
+          Width
+          <input
+            type="number"
+            value={width}
+            onChange={e => setWidth(Number(e.target.value))}
+            style={style}
+          />
+        </span>
+        <span>
+          Height
+          <input
+            type="number"
+            value={height}
+            onChange={e => setHeight(Number(e.target.value))}
+            style={style}
+          />
+        </span>
+
+        </div>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react"
+import { navigate } from "gatsby"
 import "./HomeScreen.scss"
 import scatterDots from "../utils/scatterDots"
 
@@ -7,7 +8,6 @@ const HomeScreen = () => {
   return (
     <div className="container">
       <div className="grid">
-        {/* <div className="edge" /> */}
         <div className="cell" />
         <div className="cell">
           <div className="circle" />
@@ -34,10 +34,11 @@ const HomeScreen = () => {
         </div>
         <div className="cell" />
         <div className="cell">
-          <div className="circle" />
+          <div className="circle" onClick={navigate("/find")}>
+            <div>[0]</div>
+          </div>
         </div>
         <div className="cell" />
-        {/* <div className="edge" /> */}
       </div>
     </div>
   )

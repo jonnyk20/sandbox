@@ -14,17 +14,7 @@ const scatterDots = () => {
   }
 }
 
-const removeDots = () => {
-  document.querySelectorAll(".box").forEach(el => {
-    el.remove()
-  })
-}
-
 const initiateScatterDots = () => {
   scatterDots()
-  // window.onresize = () => {
-  //   removeDots()
-  //   scatterDots()
-  // }
 }
 export default initiateScatterDots
